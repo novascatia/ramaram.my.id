@@ -1,8 +1,9 @@
-module.exports = async (req, res) => {
-  const queryParams = new URLSearchParams(req.query).toString();
-  const targetUrl = `https://sportsrc.me/api?` + queryParams;
-
+export default async function handler(req) {
   try {
+    const urlObj = new URL(req.url, `https://${req.headers.get('host')}`);
+    const queryParams = urlObj.searchParams.toString();
+    const targetUrl = `https://sportsrc.me/api?${queryParams}`;
+
     const response = await fetch(targetUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
@@ -10,15 +11,19 @@ module.exports = async (req, res) => {
       }
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     const data = await response.json();
-    
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    return res.status(200).json(data);
+
+    return new Response(JSON.stringify(data), {
+      status: response.status,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
-};
+}
