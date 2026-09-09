@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RamaSRC</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #111; color: #aaa; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 17, 17, 0.95); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.modal-content { background: #111; border: 1px solid #1e1e1e; padding: 32px 24px; max-width: 420px; width: 90%; border-radius: 8px; text-align: center; }
+.modal-content h2 { color: #eee; font-size: 1.5rem; font-weight: 500; margin-bottom: 4px; }
+.sub-id { font-size: 0.85rem; color: #777; margin-bottom: 16px; }
+.modal-text, .modal-text-id { font-size: 0.9rem; margin-bottom: 4px; }
+.modal-text-id { color: #777; margin-bottom: 12px; font-size: 0.85rem; }
+hr { border: none; border-top: 1px solid #1e1e1e; margin: 16px 0; }
+.donate-btn { display: inline-block; background: transparent; color: #eee; border: 1px solid #333; padding: 10px 20px; border-radius: 4px; text-decoration: none; margin: 8px 0; transition: border 0.3s; }
+.donate-btn:hover { border-color: #eee; }
+.enter-btn { display: block; width: 100%; background: #eee; color: #111; border: none; padding: 12px; border-radius: 4px; margin-top: 24px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; }
+header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #1e1e1e; }
+.logo { color: #eee; font-size: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.logo-icon { color: #777; font-size: 0.9rem; }
+.live-badge { display: flex; align-items: center; gap: 6px; color: #eee; font-size: 0.85rem; font-weight: 500; }
+.live-dot { width: 8px; height: 8px; background: #eee; border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+.cat-bar { padding: 12px 24px; border-bottom: 1px solid #1e1e1e; }
+.cat-btn { background: transparent; border: 1px solid #333; color: #aaa; padding: 6px 16px; border-radius: 20px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; }
+.cat-btn.active { background: #eee; color: #111; border-color: #eee; }
+.main { display: flex; flex: 1; overflow: hidden; flex-direction: column; }
+@media (min-width: 768px) { .main { flex-direction: row; } }
+.player-side { flex: 2; padding: 24px; overflow-y: auto; }
+.video-wrap { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; border: 1px solid #1e1e1e; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; }
+#embedArea { width: 100%; height: 100%; }
+.match-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #1e1e1e; }
+.match-bar-teams { color: #eee; font-size: 1.2rem; font-weight: 500; }
+.match-bar-meta { color: #777; font-size: 0.85rem; }
+.sidebar { flex: 1; border-left: none; border-top: 1px solid #1e1e1e; display: flex; flex-direction: column; background: #111; }
+@media (min-width: 768px) { .sidebar { border-top: none; border-left: 1px solid #1e1e1e; } }
+.sidebar-header { padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e1e1e; color: #eee; font-weight: 500; }
+.match-count { color: #777; font-size: 0.85rem; }
+.search-wrap { padding: 16px 24px; border-bottom: 1px solid #1e1e1e; display: flex; align-items: center; gap: 12px; }
+.search-input { width: 100%; background: transparent; border: none; color: #eee; font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none; }
+.search-input::placeholder { color: #555; }
+.match-list { flex: 1; overflow-y: auto; padding: 12px; }
+.loader { display: flex; justify-content: center; padding: 40px; }
+.spinner { width: 24px; height: 24px; border: 2px solid #333; border-top-color: #eee; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="welcomePopup" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Welcome to RamaSRC</h2>
+    <div class="sub-id">Selamat datang di RamaSRC</div>
+    <hr>
+    <div class="modal-text">Recommended using Brave so you will not getting any ads.</div>
+    <div class="modal-text-id">Disarankan menggunakan browser Brave agar tidak ada iklan.</div>
+    <hr>
+    <div class="modal-text">RamaSRC Provides Free Streaming for Any Football Matches You Want!</div>
+    <div class="modal-text-id">RamaSRC Menyediakan Streamaing Gratis untuk Pertandingan Bola Manapun!</div>
+    <hr>
+    <div class="modal-text">If you want to donate to keep the website running, click here:</div>
+    <div class="modal-text-id">Jika Anda ingin berdonasi agar website tetap beroperasi, klik ini:</div>
+    <a href="https://saweria.co/novascatia" target="_blank" class="donate-btn">
+      Saweria (IDN)
+    </a>
+    <button id="closePopup" class="enter-btn">Masuk / Enter</button>
+  </div>
+</div>
+
+<header>
+  <div class="logo"><span class="logo-icon">▶</span> RamaSRC</div>
+  <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+</header>
+
+<div class="cat-bar" id="catBar">
+  <button class="cat-btn active" data-cat="football">Football</button>
+</div>
+
+<div class="main" id="mainLayout">
+  <div class="player-side" id="playerSide">
+    <div class="stream-area" id="tabStream">
+      <div id="playerBox">
+        <div class="video-wrap">
+          <div id="embedArea"></div>
+        </div>
+        <div class="match-bar">
+          <div class="match-bar-teams" id="matchBarTeams">Select a match to watch</div>
+          <div class="match-bar-meta" id="matchBarMeta"></div>
+        </div>
+        <div class="stream-switcher" id="streamSwitcher"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span>Up Next</span>
+      <span class="match-count" id="matchCount">0 matches</span>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search teams or events..." autocomplete="off">
+    </div>
+    <div class="match-list" id="matchList">
+      <div class="loader"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const welcomePopup = document.getElementById('welcomePopup');
+  const closePopupBtn = document.getElementById('closePopup');
+
+  closePopupBtn.addEventListener('click', () => {
+    welcomePopup.style.display = 'none';
+  });
+</script>
+</body>
+</html>
