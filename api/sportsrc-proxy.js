@@ -1,39 +1,24 @@
-// netlify/functions/sportsrc-proxy.js
-// Proxy untuk api.sportsrc.org agar tidak kena CORS block di browser
+const fetch = require('node-fetch'); // atau sesuaikan dengan library fetch yang kamu pakai
 
-exports.handler = async (event) => {
-  const params = event.queryStringParameters || {};
-  const query = new URLSearchParams(params).toString();
-  const url = `https://api.sportsrc.org/?${query}`;
+module.exports = async (req, res) => {
+  // Mengambil parameter query dari URL request
+  const queryParams = new URLSearchParams(req.query).toString();
+  const targetUrl = `https://sportsrc.me/api?` + queryParams; // sesuaikan dengan endpoint asli sportsrc kamu
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(targetUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0',
-        'Accept': 'application/json',
+        'Referer': 'https://sportsrc.me/'
       }
     });
-
-    const text = await response.text();
-
-    // Log sample ke console Netlify untuk debug
-    console.log('URL fetched:', url);
-    console.log('Response sample:', text.substring(0, 500));
-
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-      body: text,
-    };
-  } catch (err) {
-    return {
-      statusCode: 500,
-      headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ error: err.message }),
-    };
+    
+    const data = await response.json();
+    
+    // Mengizinkan CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
