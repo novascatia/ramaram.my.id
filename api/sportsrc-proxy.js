@@ -1,4 +1,4 @@
-export default async function handler(request) {
+export default async function handler(request, res) {
   try {
     const url = new URL(request.url);
     const searchParams = url.searchParams.toString();
@@ -13,20 +13,12 @@ export default async function handler(request) {
 
     const data = await response.text();
 
-    return new Response(data, {
-      status: response.status,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    });
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(response.status).end(data);
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    });
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(500).end(JSON.stringify({ error: error.message }));
   }
 }
