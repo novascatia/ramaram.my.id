@@ -1,8 +1,14 @@
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   try {
-    // Mengambil query parameters dari request URL
-    const urlObj = new URL(req.url, `https://${req.headers.host}`);
-    const queryParams = urlObj.searchParams.toString();
+    const queryParams = new URLSearchParams(req.query).toString();
     const targetUrl = `https://sportsrc.me/api?${queryParams}`;
 
     const response = await fetch(targetUrl, {
@@ -13,12 +19,8 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-
-    // Mengizinkan CORS dan mengirim response menggunakan res.status().json()
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    return res.status(response.status).json(data);
+    return res.status(200).json(data);
   } catch (error) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
     return res.status(500).json({ error: error.message });
   }
-}
+};
