@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,111 +27,80 @@
     flex-direction: column; 
   }
 
-  /* Modal Popup */
-  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 17, 17, 0.95); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-  .modal-content { background: var(--bg-dark); border: 1px solid var(--border); padding: 32px 24px; max-width: 420px; width: 90%; border-radius: 8px; text-align: center; }
-  .modal-content h2 { font-size: 1.5rem; font-weight: 500; margin-bottom: 4px; }
-  .sub-id { font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; }
-  .modal-text, .modal-text-id { font-size: 0.9rem; margin-bottom: 4px; }
-  .modal-text-id { color: var(--muted); margin-bottom: 12px; font-size: 0.85rem; }
-  hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-  .donate-btn { display: inline-block; background: transparent; color: var(--text); border: 1px solid #333; padding: 10px 20px; border-radius: 4px; text-decoration: none; margin: 8px 0; transition: 0.3s; }
-  .donate-btn:hover { border-color: var(--text); }
-  .enter-btn { display: block; width: 100%; background: var(--text); color: var(--bg-dark); border: none; padding: 12px; border-radius: 4px; margin-top: 24px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; }
-  
-  /* Header & Navigation */
-  header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--border); }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+  header { display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; border-bottom: 1px solid var(--border); }
   .logo { font-size: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
   .logo-icon { color: var(--accent); font-size: 0.9rem; }
   .live-badge { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 500; }
   .live-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
   @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
   
-  .cat-bar { padding: 12px 24px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; overflow-x: auto;}
-  .cat-btn { background: transparent; border: 1px solid #333; color: var(--muted); padding: 6px 16px; border-radius: 20px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; transition: 0.2s;}
+  .cat-bar { padding: 16px 32px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; overflow-x: auto;}
+  .cat-btn { background: transparent; border: 1px solid #333; color: var(--muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; transition: 0.2s;}
   .cat-btn.active { background: var(--text); color: var(--bg-dark); border-color: var(--text); }
 
-  /* Main Layout */
   .main { display: flex; flex: 1; overflow: hidden; flex-direction: column; }
   @media (min-width: 900px) { .main { flex-direction: row; } }
   
-  /* Player Side */
-  .player-side { flex: 2; padding: 24px; overflow-y: auto; }
-  .video-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
+  .player-side { flex: 2; padding: 32px; overflow-y: auto; }
+  .video-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px; overflow: hidden; }
   #embedArea { width: 100%; height: 100%; }
   #embedArea iframe { width: 100%; height: 100%; border: none; }
   
-  .match-bar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .match-bar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
   @media (min-width: 768px) { .match-bar { flex-direction: row; justify-content: space-between; align-items: center; } }
   .match-bar-teams { font-size: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 12px; }
   .match-bar-meta { color: var(--muted); font-size: 0.85rem; }
-  .mbt { display: flex; align-items: center; gap: 8px; }
+  .mbt { display: flex; align-items: center; gap: 10px; }
   .mbt img { width: 28px; height: 28px; object-fit: contain; }
   .vs-sep { font-size: 0.85rem; color: var(--muted); font-weight: 400; }
   
-  .stream-switcher { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .stream-switcher { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
   .stream-btn { background: var(--bg-dark); border: 1px solid #333; color: var(--muted); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; transition: 0.2s; }
   .stream-btn:hover { border-color: #555; color: var(--text); }
   .stream-btn.active { border-color: var(--text); color: var(--text); }
 
-  /* Sidebar & List */
   .sidebar { flex: 1; border-top: 1px solid var(--border); display: flex; flex-direction: column; background: var(--bg-dark); max-height: 100vh; }
   @media (min-width: 900px) { .sidebar { border-top: none; border-left: 1px solid var(--border); } }
-  .sidebar-header { padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); font-weight: 500; }
+  .sidebar-header { padding: 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); font-weight: 500; }
   .match-count { color: var(--muted); font-size: 0.85rem; }
   
-  .search-wrap { padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-  .search-input { width: 100%; background: transparent; border: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none; }
+  .search-wrap { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .search-input { width: 100%; background: transparent; border: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; }
   .search-input::placeholder { color: #555; }
   
-  .match-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .match-list { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 12px; }
   
-  /* Dynamically generated JS Items */
-  .match-item { display: flex; align-items: center; padding: 12px 16px; background: transparent; border-radius: 6px; cursor: pointer; transition: 0.2s; border-left: 3px solid transparent; gap: 12px; }
+  .match-item { display: flex; align-items: center; padding: 16px; background: transparent; border-radius: 8px; cursor: pointer; transition: 0.2s; border-left: 3px solid transparent; gap: 16px; }
   .match-item:hover { background: var(--bg-panel); }
   .match-item.selected { background: var(--bg-panel); border-left: 3px solid var(--text); }
   
   .match-time { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; font-size: 0.85rem; color: var(--muted); text-align: center; }
-  .match-teams-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  .team-row { display: flex; align-items: center; gap: 10px; }
+  .match-teams-col { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .team-row { display: flex; align-items: center; gap: 12px; }
   .team-badge { width: 24px; height: 24px; object-fit: contain; }
-  .team-name { font-size: 0.9rem; color: var(--text); }
+  .team-name { font-size: 0.95rem; color: var(--text); }
   
   .play-btn { color: #333; font-size: 0.8rem; transition: 0.2s; }
   .match-item:hover .play-btn, .match-item.selected .play-btn { color: var(--text); }
   
-  .pinned-banner { padding: 6px 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin: 8px 0 4px 0; border-radius: 4px; font-weight: 500; }
+  .pinned-banner { padding: 10px 16px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0; border-radius: 6px; font-weight: 500; }
   .banner-indo { background: rgba(255, 68, 68, 0.1); color: var(--accent); }
   .banner-mu { background: rgba(255, 68, 68, 0.1); color: var(--accent); }
   .indo-highlight, .mu-highlight { font-weight: 700; color: var(--accent); }
   
-  /* Loading Spinner */
+  .list-divider { height: 1px; background: var(--border); margin: 16px 0; width: 100%; }
+
   .loader { display: flex; justify-content: center; padding: 40px; }
-  .spinner { width: 24px; height: 24px; border: 2px solid #333; border-top-color: var(--text); border-radius: 50%; animation: spin 1s linear infinite; }
+  .spinner { width: 28px; height: 28px; border: 2px solid #333; border-top-color: var(--text); border-radius: 50%; animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
-
-<div id="welcomePopup" class="modal-overlay">
-  <div class="modal-content">
-    <h2>Welcome to RamaSRC</h2>
-    <div class="sub-id">Selamat datang di RamaSRC</div>
-    <hr>
-    <div class="modal-text">Recommended using Brave so you will not getting any ads.</div>
-    <div class="modal-text-id">Disarankan menggunakan browser Brave agar tidak ada iklan.</div>
-    <hr>
-    <div class="modal-text">RamaSRC Provides Free Streaming for Any Football Matches You Want!</div>
-    <div class="modal-text-id">RamaSRC Menyediakan Streamaing Gratis untuk Pertandingan Bola Manapun!</div>
-    <hr>
-    <div class="modal-text">If you want to donate to keep the website running, click here:</div>
-    <div class="modal-text-id">Jika Anda ingin berdonasi agar website tetap beroperasi, klik ini:</div>
-    <a href="https://saweria.co/novascatia" target="_blank" class="donate-btn">
-      Saweria (IDN)
-    </a>
-    <button id="closePopup" class="enter-btn">Masuk / Enter</button>
-  </div>
-</div>
 
 <header>
   <div class="logo"><span class="logo-icon">▶</span> RamaSRC</div>
@@ -175,7 +144,7 @@
 </div>
 
 <script>
-const API = '/.netlify/functions/sportsrc-proxy';
+const apiProxy = '/.netlify/functions/sportsrc-proxy';
 let currentCategory = 'football';
 let allMatches = [];
 
@@ -211,18 +180,14 @@ function getFallbackIcon(name) {
 
 window.getFallbackIcon = getFallbackIcon;
 
-document.getElementById('closePopup').addEventListener('click', () => {
-  document.getElementById('welcomePopup').style.display = 'none';
-});
-
 document.getElementById('searchInput').addEventListener('input', e => {
-  const q = e.target.value.trim().toLowerCase();
-  renderList(q ? allMatches.filter(m => matchLabel(m).toLowerCase().includes(q)) : allMatches);
+  const queryText = e.target.value.trim().toLowerCase();
+  renderList(queryText ? allMatches.filter(m => matchLabel(m).toLowerCase().includes(queryText)) : allMatches);
 });
 
 async function apiFetch(params) {
   try {
-    const res = await fetch(API + '?' + new URLSearchParams(params));
+    const res = await fetch(apiProxy + '?' + new URLSearchParams(params));
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
   } catch(e) { return { error: e.message }; }
@@ -250,15 +215,15 @@ function getPinType(m) {
 }
 
 function formatTime(ms) {
-  return new Date(ms).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
+  return new Date(ms).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
 }
 
 function formatDateShort(ms) {
-  return new Date(ms).toLocaleDateString('id-ID', { day:'numeric', month:'short', timeZone:'Asia/Jakarta' });
+  return new Date(ms).toLocaleDateString('en-GB', { day:'numeric', month:'short', timeZone:'Asia/Jakarta' });
 }
 
 function formatDateTimeFull(ms) {
-  return new Date(ms).toLocaleString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
+  return new Date(ms).toLocaleString('en-US', { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
 }
 
 function badgeImg(url, alt) {
@@ -273,7 +238,7 @@ async function loadMatches(cat) {
   document.getElementById('matchList').innerHTML = '<div class="loader"><div class="spinner"></div></div>';
   const res = await apiFetch({ data: 'matches', category: cat });
   if (res.error || !res.success) {
-    document.getElementById('matchList').innerHTML = '<div style="padding:20px; color:#ff6b6b; text-align:center;">Gagal memuat: ' + (res.error||'') + '</div>';
+    document.getElementById('matchList').innerHTML = '<div style="padding:20px; color:#ff6b6b; text-align:center;">Failed to load: ' + (res.error||'') + '</div>';
     return;
   }
   allMatches = res.data || [];
@@ -283,7 +248,7 @@ async function loadMatches(cat) {
 
 function renderList(matches) {
   const list = document.getElementById('matchList');
-  if (!matches.length) { list.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--muted); font-size: 14px;">Tidak ada pertandingan yang ditemukan.</div>'; return; }
+  if (!matches.length) { list.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--muted); font-size: 14px;">No matches found.</div>'; return; }
 
   const pinnedMU = matches.filter(m => getPinType(m) === 'MU');
   const pinnedIndo = matches.filter(m => getPinType(m) === 'INDO');
@@ -307,6 +272,12 @@ function renderList(matches) {
     pinnedMU.forEach(m => list.appendChild(makeItem(m, 'MU')));
   }
 
+  if ((pinnedIndo.length || pinnedMU.length) && rest.length) {
+    const divider = document.createElement('div');
+    divider.className = 'list-divider';
+    list.appendChild(divider);
+  }
+
   rest.forEach(m => list.appendChild(makeItem(m, null)));
 }
 
@@ -323,7 +294,7 @@ function makeItem(m, pinType) {
   if (isLive) {
     timeDisplay = '<span style="color:var(--accent); font-weight:700;">LIVE</span>';
   } else if (m.date) {
-    timeDisplay = `<span style="font-size:10px; display:block; margin-bottom:3px; opacity:0.7;">${formatDateShort(m.date)}</span><span>${formatTime(m.date).replace(' WIB', '')}</span>`;
+    timeDisplay = `<span style="font-size:11px; display:block; margin-bottom:4px; opacity:0.7;">${formatDateShort(m.date)}</span><span>${formatTime(m.date).replace(' WIB', '')}</span>`;
   }
   
   const homeHighlight = (pinType === 'MU' && home.toLowerCase().includes('manchester united')) || (pinType === 'INDO' && home.toLowerCase().includes('indonesia'));
@@ -389,9 +360,9 @@ async function loadStream(cat, id, m) {
       const countdownId = 'cd_' + Date.now();
       ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center; background:#0f0f0f;">
         <div style="font-size:40px">⏳</div>
-        <div style="font-size:24px; font-weight:700; color:var(--text)">BELUM WAKTUNYA</div>
-        <div style="font-size:14px; color:var(--muted); max-width:300px; line-height:1.6;">Kamu baru bisa mengakses streaming 10 menit sebelum pertandingan dimulai!</div>
-        <div style="font-size:16px; font-weight:500; color:var(--accent); margin-top:8px;" id="${countdownId}"></div>
+        <div style="font-size:24px; font-weight:700; color:var(--text)">STREAM NOT READY</div>
+        <div style="font-size:14px; color:var(--muted); max-width:320px; line-height:1.6;">You can access the stream 10 minutes before the match starts!</div>
+        <div style="font-size:16px; font-weight:500; color:var(--accent); margin-top:12px;" id="${countdownId}"></div>
       </div>`;
 
       function fmtCountdown() {
@@ -405,14 +376,14 @@ async function loadStream(cat, id, m) {
       }
 
       const el = document.getElementById(countdownId);
-      if (el) el.textContent = 'Mulai dalam: ' + (fmtCountdown() || '');
+      if (el) el.textContent = 'Starts in: ' + (fmtCountdown() || '');
 
       const timer = setInterval(() => {
         const el = document.getElementById(countdownId);
         if (!el) { clearInterval(timer); return; }
         const val = fmtCountdown();
-        if (!val) { clearInterval(timer); el.textContent = 'Mulai sekarang!'; return; }
-        el.textContent = 'Mulai dalam: ' + val;
+        if (!val) { clearInterval(timer); el.textContent = 'Starting now!'; return; }
+        el.textContent = 'Starts in: ' + val;
       }, 1000);
       return;
     }
@@ -420,7 +391,7 @@ async function loadStream(cat, id, m) {
 
   const res = await apiFetch({ data: 'detail', category: cat, id });
   if (res.error || !res.success) {
-    ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ff6b6b;font-weight:500;">Gagal memuat video: ${res.error||''}</div>`;
+    ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ff6b6b;font-weight:500;">Failed to load video: ${res.error||''}</div>`;
     return;
   }
 
@@ -450,7 +421,7 @@ async function loadStream(cat, id, m) {
       });
     }
   } else {
-    ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);">Stream belum tersedia.</div>`;
+    ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);">Stream not available yet.</div>`;
   }
 }
 
