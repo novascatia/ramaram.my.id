@@ -9,23 +9,12 @@
   <link rel="shortcut icon" type="image/png" href="logo.png" />
   
   <title>ramaram</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    :root {
-      --accent: #ff6b6b;
-      --text-primary: #f1f1f1;
-      --text-secondary: #aaa;
-      --text-muted: #666;
-      --bg-dark: #0d0d0d;
-      --bg-panel: #141414;
-      --border: rgba(255, 255, 255, 0.06);
-    }
-
     body {
-      background: var(--bg-dark);
-      color: var(--text-secondary);
+      background: #0d0d0d;
+      color: #999;
       font-family: 'Inter', sans-serif;
       font-size: 15px;
       line-height: 1.7;
@@ -33,17 +22,15 @@
       opacity: 0;
       animation: fadeIn 0.6s ease forwards;
     }
-
     @keyframes fadeIn {
       to { opacity: 1; }
     }
-
     nav {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      background: rgba(13, 13, 13, 0.9);
+      background: rgba(13, 13, 13, 0.85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
@@ -51,57 +38,34 @@
       display: flex;
       justify-content: center;
       padding: 22px 0;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
-
     .navcontent {
       width: 100%;
       max-width: 580px;
       padding: 0 24px;
       display: flex;
-      gap: 24px;
-      align-items: center;
+      gap: 20px;
     }
-
     nav a {
-      color: var(--text-muted);
+      color: #777;
       text-decoration: none;
       font-size: 0.85rem;
       font-weight: 500;
       transition: color 0.2s ease;
-      position: relative;
     }
-
     nav a:hover {
-      color: var(--text-primary);
+      color: #f1f1f1;
     }
-
-    nav a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--accent);
-      transition: width 0.3s ease;
-    }
-
-    nav a:hover::after {
-      width: 100%;
-    }
-
     .navhidden {
       transform: translateY(-100%);
       opacity: 0;
     }
-
     .container {
       padding: 130px 24px 80px;
       max-width: 580px;
       margin: 0 auto;
     }
-
     @media (min-width: 768px) {
       .container {
         padding: 150px 0 100px;
@@ -110,144 +74,85 @@
         padding: 0; 
       }
     }
-
     .hero-tag {
       display: inline-block;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--accent);
-      background: rgba(255, 107, 107, 0.08);
-      border: 1px solid rgba(255, 107, 107, 0.2);
-      padding: 5px 12px;
+      letter-spacing: 0.08em;
+      color: #666;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 4px 10px;
       border-radius: 20px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
-
     h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-      letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #f1f1f1 0%, #aaa 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .tagline {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 50px;
-      font-weight: 500;
-    }
-
-    p { 
-      margin-bottom: 24px; 
-      color: var(--text-secondary);
-    }
-
-    p strong {
-      color: var(--text-primary);
+      font-size: 1.8rem;
       font-weight: 600;
+      color: #f1f1f1;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
     }
-
+    .url {
+      font-size: 0.8rem;
+      color: #555;
+      margin-bottom: 45px;
+      font-family: monospace;
+    }
+    p { 
+      margin-bottom: 28px; 
+      color: #aaa;
+    }
     a { 
-      color: var(--text-muted); 
+      color: #888; 
       text-decoration: none; 
       transition: color 0.2s ease;
     }
-
     a:hover { 
-      color: var(--accent);
+      color: #f1f1f1; 
     }
-
     .content-highlight {
-      color: var(--accent);
-      font-weight: 500;
+      color: #ccc;
     }
-
     hr {
       border: none;
-      border-top: 1px solid var(--border);
-      margin: 50px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      margin: 40px 0;
     }
-
     .links {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      font-size: 0.9rem;
+      gap: 10px;
+      font-size: 0.85rem;
     }
-
     .links a { 
-      color: var(--text-muted);
+      color: #666; 
       width: fit-content;
       position: relative;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
-
     .links a::after {
-      content: '↗';
-      opacity: 0;
-      transition: opacity 0.2s ease;
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 1px;
+      bottom: -2px;
+      left: 0;
+      background-color: #f1f1f1;
+      transition: width 0.3s ease;
     }
-
-    .links a:hover {
-      color: var(--accent);
-    }
-
     .links a:hover::after {
-      opacity: 1;
+      width: 100%;
     }
-
-    .cta-section {
-      margin-top: 50px;
-      padding: 24px;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .links a:hover { 
+      color: #f1f1f1; 
     }
-
-    .cta-section a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      color: var(--text-primary);
-      font-weight: 500;
-      border-bottom: 1px solid rgba(255, 107, 107, 0.3);
-      transition: all 0.2s ease;
-    }
-
-    .cta-section a:last-child {
-      border-bottom: none;
-    }
-
-    .cta-section a:hover {
-      color: var(--accent);
-      padding-left: 4px;
-    }
-
-    .cta-icon {
-      font-size: 0.8rem;
-      opacity: 0.6;
-    }
-
   </style>
 </head>
 <body>
 
   <nav id="navbar">
     <div class="navcontent">
-      <a href="/">[home]</a>
       <a href="/project">[project]</a>
     </div>
   </nav>
@@ -255,18 +160,19 @@
   <div class="container">
     <div class="hero-tag">Portfolio & Notes</div>
     <h1>Hi, I'm Rama</h1>
-    <div class="tagline">psychology student • guitarist • builder</div>
+    <div class="url">posted on 22/08/2026</div>
     
-    <p>I think too much about why people do what they do, including myself. Still figuring it out.</p>
+    <p>Psychology student. I think too much about why people do what they do, including myself. Still figuring it out.</p>
     <p>I play guitar every day. No particular reason, just feels wrong not to. Still learning, probably always will be.</p>
     <p>Sometime, you can find me on the <a href="https://discord.gg/motionime" target="_blank">motionime discord</a> server. Mostly lurking, sometimes talking.</p>
-    <p>Im looking for.. someone.. ykwim..? <strong>partner</strong>..? someone to talk to.. yeah thats pathetic but if thats you.. youre in luck 🤷‍♂️</p>
-
+    <p>Im looking for.. someone.. ykwim..? partner..? someone to talk to.. yeah thats pathetic but if thats you.. youre in luck 🤷‍♂️.</p>
+    <p class="content-highlight">This website is back! with new domain :p</p>
+    
     <hr />
     
     <div class="links">
-      <a href="https://instagram.com/dkramaaaa" target="_blank">instagram</a>
-      <a href="https://open.spotify.com/user/312em4jgpxct27qoj7vfu3z2xqei?si=18db406e0da34ca5" target="_blank">spotify</a>
+      <a href="https://instagram.com/dkramaaaa" target="_blank">my instagram</a>
+      <a href="https://open.spotify.com/user/312em4jgpxct27qoj7vfu3z2xqei?si=18db406e0da34ca5" target="_blank">my spotify</a>
     </div>
   </div>
 
