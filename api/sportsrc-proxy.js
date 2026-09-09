@@ -1,42 +1,33 @@
+// api/sportsrc-proxy.js (Vercel)
+
 export default async function handler(req, res) {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    return res.status(200).end();
-  }
-
   try {
-    const params = new URLSearchParams(req.query).toString();
-    const targetUrl = `https://sportsrc.me/api?${params}`;
+    const params = req.query || {};
+    const query = new URLSearchParams(params).toString();
+    const url = `https://api.sportsrc.org/?${query}`;
 
-    console.log('Proxy request to:', targetUrl);
+    console.log('URL fetched:', url);
 
-    const response = await fetch(targetUrl, {
-      method: 'GET',
+    const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0',
         'Accept': 'application/json',
-        'Referer': 'https://sportsrc.me/'
       }
     });
 
-    const data = await response.text();
+    const text = await response.text();
+    console.log('Response sample:', text.substring(0, 500));
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     
-    res.status(response.status).send(data);
+    res.status(response.status).send(text);
 
-  } catch (error) {
-    console.error('Proxy error:', error);
+  } catch (err) {
+    console.error('Error:', err);
     
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Content-Type', 'application/json');
-    
-    res.status(500).json({ 
-      error: error.message 
-    });
+    res.status(500).json({ error: err.message });
   }
 }
