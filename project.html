@@ -9,100 +9,131 @@
   <link rel="shortcut icon" type="image/png" href="logo.png" />
   
   <title>projects - rama</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #111;
-      color: #aaa;
+      background: #0d0d0d;
+      color: #999;
       font-family: 'Inter', sans-serif;
       font-size: 15px;
       line-height: 1.7;
       min-height: 100vh;
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
     }
     nav {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      background: rgba(17, 17, 17, 0.9);
-      backdrop-filter: blur(8px);
-      transition: transform 0.4s ease, opacity 0.4s ease;
+      background: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
       z-index: 100;
       display: flex;
       justify-content: center;
-      padding: 20px 0;
+      padding: 22px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
     .navcontent {
       width: 100%;
-      max-width: 560px;
+      max-width: 580px;
       padding: 0 24px;
       display: flex;
-      gap: 16px;
+      gap: 20px;
     }
     nav a {
       color: #777;
       text-decoration: none;
       font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
     }
     nav a:hover {
-      color: #eee;
+      color: #f1f1f1;
     }
     .navhidden {
       transform: translateY(-100%);
       opacity: 0;
     }
     .container {
-      padding: 100px 24px 60px;
-      max-width: 560px;
+      padding: 130px 24px 80px;
+      max-width: 580px;
       margin: 0 auto;
     }
     @media (min-width: 768px) {
       .container {
-        padding: 120px 0 80px;
+        padding: 150px 0 100px;
       }
       .navcontent {
         padding: 0; 
       }
     }
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #666;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
     h1 {
-      font-size: 1.5rem;
-      font-weight: 500;
-      color: #eee;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #f1f1f1;
       margin-bottom: 40px;
+      letter-spacing: -0.02em;
     }
     
-    /* Styling khusus untuk bagian Project */
     .project-item {
-      margin-bottom: 50px;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 28px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .project-item:hover {
+      border-color: rgba(255, 255, 255, 0.1);
     }
     .project-item h2 {
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: #eee;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f1f1f1;
       margin-bottom: 12px;
+      letter-spacing: -0.01em;
     }
     .project-img {
       width: 100%;
       height: auto;
       max-height: 320px;
       object-fit: cover;
-      border-radius: 6px; /* Ujung foto sedikit melengkung biar modern */
+      border-radius: 8px;
       margin-bottom: 16px;
       display: block;
-      background-color: #1e1e1e; /* Warna dasar jika foto belum load */
+      background-color: #161616;
     }
     .project-item p { 
-      margin-bottom: 0; 
+      margin-bottom: 10px; 
+      color: #aaa;
+      font-size: 0.95rem;
+    }
+    .project-item p:last-child {
+      margin-bottom: 0;
     }
     
-    a { color: #777; text-decoration: none; }
-    a:hover { color: #eee; }
-    hr {
-      border: none;
-      border-top: 1px solid #1e1e1e;
-      margin: 40px 0;
-    }
+    a { color: #888; text-decoration: none; transition: color 0.2s ease; }
+    a:hover { color: #f1f1f1; }
   </style>
 </head>
 <body>
@@ -115,36 +146,33 @@
   </nav>
 
   <div class="container">
+    <div class="hero-tag">Works & Archives</div>
     <h1>my projects</h1>
 
-    <!-- ==========================================
-         COPY PASTE DARI SINI UNTUK PROJECT TANPA FOTO
-         ========================================== -->
     <div class="project-item">
       <h2>Talkify</h2>
       <p>Talkify adalah bot telegram berbasis python yang dibuat untuk mengganti bot datingify yang sebelumnya maintenance untuk waktu yang lama.</p>
-      <p>project ini tidak dilanjutkan karena masalah pendanaan dan kembalinya bot datingify</p>
-      <p>akan tetapi ini tidak menutup kemungkinan untuk kembalinya bot Talkify dimasa yang akan datang.</p>
-      <p>registered user : 210</p>
+      <p>Project ini tidak dilanjutkan karena masalah pendanaan dan kembalinya bot datingify.</p>
+      <p>Akan tetapi ini tidak menutup kemungkinan untuk kembalinya bot Talkify dimasa yang akan datang.</p>
+      <p style="color: #666; font-size: 0.85rem; margin-top: 14px;">registered user : 210</p>
     </div>
-    <!-- ========================================== -->
 
     <div class="project-item">
       <h2>NovaStream</h2>
-      <p>NovaStream adalah project website untuk nonton bola secara gratis yang didanai oleh komunitas</p>
-      <p>menggunakan source stream dari sportsrc untuk player video</p>
-      <p>project ini terhenti karena kurangnya pendanaan serta domain yang digunakan sudah expired.</p>
-      <p>novastream akan kembali dengan nama domain yang berbeda.</p>
+      <p>NovaStream adalah project website untuk nonton bola secara gratis yang didanai oleh komunitas.</p>
+      <p>Menggunakan source stream dari sportsrc untuk player video.</p>
+      <p>Project ini terhenti karena kurangnya pendanaan serta domain yang digunakan sudah expired.</p>
+      <p style="color: #f1f1f1; font-weight: 500; margin-top: 14px;">novastream akan kembali dengan nama domain yang berbeda.</p>
     </div>
 
-    <!-- photo
+    <!-- Template project dengan foto (bisa di-uncomment jika ingin dipakai) -->
+    <!--
     <div class="project-item">
       <h2>project b</h2>
-      Ganti 'foto-project.jpg' dengan nama file foto kamu
       <img src="foto-project.jpg" alt="preview project b" class="project-img" />
-      <p>Vivamus efficitur magna non augue volutpat, sit amet cursus nulla blandit. Sed quis varius nisi. Fusce vitae eros ac mi tristique convallis.</p>
+      <p>Vivamus efficitur magna non augue volutpat, sit amet cursus nulla blandit. Sed quis varius nisi.</p>
     </div>
-    ========================================== -->
+    -->
 
   </div>
 
