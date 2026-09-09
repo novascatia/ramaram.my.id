@@ -3,116 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>@grayalldayog</title>
+<title>ramaram.my.id</title>
 <style>
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #121212;
-    color: #e0e0e0;
     margin: 0;
+    padding: 0;
+    background-color: #0a0a0a;
+    color: #ededed;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-}
-.container {
-    background-color: #1e1e1e;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    max-width: 600px;
-    width: 100%;
     text-align: center;
 }
+.wrapper {
+    max-width: 600px;
+    padding: 2rem;
+}
 h1 {
-    color: #ffffff;
-    margin-bottom: 10px;
+    font-size: 3rem;
+    font-weight: 500;
+    margin: 0 0 1rem 0;
+    letter-spacing: -0.03em;
 }
-.tagline {
-    color: #a0a0a0;
-    font-size: 1.1em;
-    margin-bottom: 30px;
-}
-.skills {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-.skill-tag {
-    background-color: #333;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.9em;
-}
-.spotify-widget {
-    background-color: #1db954;
-    color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 30px;
-    display: none;
-    font-weight: bold;
-}
-.links a {
-    color: #4da6ff;
-    text-decoration: none;
-    margin: 0 10px;
-}
-.links a:hover {
-    text-decoration: underline;
+p {
+    font-size: 1.125rem;
+    color: #a1a1aa;
+    line-height: 1.6;
+    margin: 0;
 }
 </style>
 </head>
 <body>
-<div class="container">
-<h1>@grayalldayog</h1>
-<p class="tagline">Developer & Automation Enthusiast</p>
-
-<p>Building functional systems with clean code. Focused on creating efficient automation scripts, asynchronous Python Telegram bots, and scalable game mechanics.</p>
-
-<div class="skills">
-<span class="skill-tag">Roblox Development</span>
-<span class="skill-tag">Python & Async</span>
-<span class="skill-tag">Lua Scripting</span>
-<span class="skill-tag">UI Systems</span>
+<div class="wrapper">
+<h1>ramaram.my.id</h1>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
 </div>
-
-<div class="links">
-<a href="https://roblox.com/users/6134135249/profile" target="_blank">Roblox Profile</a>
-<a href="#">GitHub</a>
-<a href="#">Contact</a>
-</div>
-
-<div class="spotify-widget" id="spotifywidget">
-🎵 Now Playing: <span id="trackname">Loading...</span>
-</div>
-</div>
-
-<script>
-const spotifyapiurl = "https://novascatia.my.id/api/spotify";
-const spotifywidget = document.getElementById("spotifywidget");
-const trackname = document.getElementById("trackname");
-
-async function fetchspotify() {
-    try {
-        const response = await fetch(spotifyapiurl);
-        const data = await response.json();
-        
-        if (data && data.is_playing) {
-            trackname.textContent = data.track_name + " - " + data.artist;
-            spotifywidget.style.display = "block";
-        } else {
-            spotifywidget.style.display = "none";
-        }
-    } catch (error) {
-        spotifywidget.style.display = "none";
-    }
-}
-
-fetchspotify();
-setInterval(fetchspotify, 30000);
-</script>
 </body>
 </html>
