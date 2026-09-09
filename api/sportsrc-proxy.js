@@ -1,11 +1,5 @@
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
 
   try {
     const queryParams = new URLSearchParams(req.query).toString();
@@ -18,9 +12,11 @@ module.exports = async (req, res) => {
       }
     });
 
-    const data = await response.json();
-    return res.status(200).json(data);
+    const textData = await response.text();
+    
+    // Mengembalikan status asli dan teks respon dari sportsrc agar terlihat di browser
+    return res.status(response.status).send(textData);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: 'Fetch failed', details: error.message });
   }
 };
