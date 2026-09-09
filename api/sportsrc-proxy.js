@@ -1,6 +1,7 @@
-export default async function handler(req) {
+export default async function handler(req, res) {
   try {
-    const urlObj = new URL(req.url, `https://${req.headers.get('host')}`);
+    // Mengambil query parameters dari request URL
+    const urlObj = new URL(req.url, `https://${req.headers.host}`);
     const queryParams = urlObj.searchParams.toString();
     const targetUrl = `https://sportsrc.me/api?${queryParams}`;
 
@@ -13,17 +14,11 @@ export default async function handler(req) {
 
     const data = await response.json();
 
-    return new Response(JSON.stringify(data), {
-      status: response.status,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    });
+    // Mengizinkan CORS dan mengirim response menggunakan res.status().json()
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.status(response.status).json(data);
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.status(500).json({ error: error.message });
   }
 }
