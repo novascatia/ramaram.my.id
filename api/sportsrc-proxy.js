@@ -1,9 +1,8 @@
-module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-
+export default async function handler(request) {
   try {
-    const queryParams = new URLSearchParams(req.query).toString();
-    const targetUrl = `https://sportsrc.me/api?${queryParams}`;
+    const url = new URL(request.url);
+    const searchParams = url.searchParams.toString();
+    const targetUrl = `https://sportsrc.me/api?${searchParams}`;
 
     const response = await fetch(targetUrl, {
       headers: {
@@ -12,11 +11,22 @@ module.exports = async (req, res) => {
       }
     });
 
-    const textData = await response.text();
-    
-    // Mengembalikan status asli dan teks respon dari sportsrc agar terlihat di browser
-    return res.status(response.status).send(textData);
+    const data = await response.text();
+
+    return new Response(data, {
+      status: response.status,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
   } catch (error) {
-    return res.status(500).json({ error: 'Fetch failed', details: error.message });
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
   }
-};
+}
