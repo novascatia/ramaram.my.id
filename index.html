@@ -222,29 +222,13 @@
     .popup-overlay.hidden {
       opacity: 0;
       pointer-events: none;
-      animation: fadeOutOverlay 0.3s ease forwards;
-    }
-    @keyframes fadeOutOverlay {
-      to { opacity: 0; }
     }
 
-    /* Thanos snap effect */
-    @keyframes thanosSnap {
-      0% {
-        opacity: 1;
-        transform: scale(1) rotate(0deg);
-      }
-      50% {
-        opacity: 0.5;
-      }
-      100% {
-        opacity: 0;
-        transform: scale(0) rotate(180deg);
-      }
+    .popup-overlay.thanos-snap {
+      opacity: 0 !important;
     }
-    .popup-overlay.thanos-snap,
     .popup-overlay.thanos-snap .popup-content {
-      animation: thanosSnap 0.8s ease-out forwards !important;
+      opacity: 0 !important;
     }
 
     /* Pop-in effect for popup */
@@ -365,11 +349,59 @@
     // Close popup on button click with Thanos snap
     popupClose.addEventListener("click", closePopupWithSnap);
 
+    function createDustParticles() {
+      const particles = 40;
+      const container = document.createElement("div");
+      container.style.position = "fixed";
+      container.style.top = "0";
+      container.style.left = "0";
+      container.style.width = "100%";
+      container.style.height = "100%";
+      container.style.pointerEvents = "none";
+      container.style.zIndex = "1001";
+      document.body.appendChild(container);
+
+      for (let i = 0; i < particles; i++) {
+        const dust = document.createElement("div");
+        dust.style.position = "absolute";
+        dust.style.width = Math.random() * 10 + 3 + "px";
+        dust.style.height = dust.style.width;
+        dust.style.background = "rgba(180, 180, 180, 0.8)";
+        dust.style.borderRadius = "50%";
+        dust.style.pointerEvents = "none";
+        
+        const startX = Math.random() * window.innerWidth * 0.4 + window.innerWidth * 0.6;
+        const startY = Math.random() * window.innerHeight * 0.4;
+        
+        dust.style.left = startX + "px";
+        dust.style.top = startY + "px";
+
+        const endX = (Math.random() - 0.8) * window.innerWidth * 1.5;
+        const endY = window.innerHeight + Math.random() * 300;
+
+        dust.animate([
+          { transform: "translate(0, 0) scale(1)", opacity: 1 },
+          { transform: `translate(${endX}px, ${endY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 800 + Math.random() * 600,
+          easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          fill: "forwards"
+        });
+
+        container.appendChild(dust);
+      }
+
+      setTimeout(() => container.remove(), 1500);
+    }
+
     function closePopupWithSnap() {
-      popupOverlay.classList.remove("hidden");
+      createDustParticles();
+      popupOverlay.style.pointerEvents = "none";
       popupOverlay.classList.add("thanos-snap");
       setTimeout(() => {
         popupOverlay.classList.add("hidden");
+        popupOverlay.classList.remove("thanos-snap");
+        popupOverlay.style.pointerEvents = "auto";
       }, 800);
     }
 
