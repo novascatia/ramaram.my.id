@@ -148,7 +148,6 @@
       color: #f1f1f1; 
     }
 
-    /* Popup styles */
     .popup-overlay {
       position: fixed;
       top: 0;
@@ -231,7 +230,6 @@
       opacity: 0 !important;
     }
 
-    /* Pop-in effect for popup */
     @keyframes popIn {
       0% {
         transform: scale(0.3) rotate(-10deg);
@@ -280,7 +278,6 @@
     </div>
   </div>
 
-  <!-- Popup -->
   <div class="popup-overlay" id="popupOverlay">
     <div class="popup-content">
       <button class="popup-close" id="popupClose">&times;</button>
@@ -304,18 +301,15 @@
       lastscroll = currentscroll <= 0 ? 0 : currentscroll;
     });
 
-    // Popup logic with daily reset
     const popupOverlay = document.getElementById("popupOverlay");
     const popupClose = document.getElementById("popupClose");
     const popupImg = popupOverlay.querySelector("img");
 
-    // Get today's date as key
     function getTodayKey() {
       const today = new Date();
       return `popupShown_${today.getFullYear()}_${today.getMonth()}_${today.getDate()}`;
     }
 
-    // Preload image before showing popup
     function preloadImage(src) {
       return new Promise((resolve) => {
         const img = new Image();
@@ -330,23 +324,16 @@
       const hasSeenPopupToday = localStorage.getItem(todayKey);
 
       if (!hasSeenPopupToday) {
-        // Preload the image first
         await preloadImage("cat.png");
-
-        // Now show the popup
         localStorage.setItem(todayKey, "true");
-
-        // Auto-close after 10 seconds with Thanos snap
         setTimeout(() => {
           closePopupWithSnap();
         }, 10000);
       } else {
-        // Hide popup if already seen today
         popupOverlay.classList.add("hidden");
       }
     }
 
-    // Close popup on button click with Thanos snap
     popupClose.addEventListener("click", closePopupWithSnap);
 
     function createDustParticles() {
@@ -369,10 +356,10 @@
         dust.style.background = "rgba(180, 180, 180, 0.8)";
         dust.style.borderRadius = "50%";
         dust.style.pointerEvents = "none";
-        
+
         const startX = Math.random() * window.innerWidth * 0.4 + window.innerWidth * 0.6;
         const startY = Math.random() * window.innerHeight * 0.4;
-        
+
         dust.style.left = startX + "px";
         dust.style.top = startY + "px";
 
@@ -396,16 +383,12 @@
 
     function closePopupWithSnap() {
       createDustParticles();
-      popupOverlay.style.pointerEvents = "none";
       popupOverlay.classList.add("thanos-snap");
       setTimeout(() => {
         popupOverlay.classList.add("hidden");
-        popupOverlay.classList.remove("thanos-snap");
-        popupOverlay.style.pointerEvents = "auto";
-      }, 800);
+      }, 500);
     }
 
-    // Initialize popup when page loads
     initPopup();
   </script>
 </body>
