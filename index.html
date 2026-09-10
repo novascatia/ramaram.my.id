@@ -147,6 +147,86 @@
     .links a:hover { 
       color: #f1f1f1; 
     }
+
+    /* Popup styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      animation: fadeInOverlay 0.3s ease forwards;
+    }
+    @keyframes fadeInOverlay {
+      to { opacity: 1; }
+    }
+    .popup-content {
+      position: relative;
+      background: rgba(20, 20, 20, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 90%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      animation: slideUp 0.4s ease forwards;
+      backdrop-filter: blur(10px);
+    }
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    .popup-content img {
+      max-width: 300px;
+      max-height: 300px;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+    }
+    .popup-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #aaa;
+      transition: all 0.2s ease;
+    }
+    .popup-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #f1f1f1;
+    }
+    .popup-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+      animation: fadeOutOverlay 0.3s ease forwards;
+    }
+    @keyframes fadeOutOverlay {
+      to { opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -176,6 +256,14 @@
     </div>
   </div>
 
+  <!-- Popup -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup-content">
+      <button class="popup-close" id="popupClose">&times;</button>
+      <img src="cat.png" alt="Welcome" />
+    </div>
+  </div>
+
   <script>
     let lastscroll = 0;
     const navbar = document.getElementById("navbar");
@@ -191,6 +279,26 @@
       
       lastscroll = currentscroll <= 0 ? 0 : currentscroll;
     });
+
+    const popupOverlay = document.getElementById("popupOverlay");
+    const popupClose = document.getElementById("popupClose");
+    const hasSeenPopup = localStorage.getItem("popupShown");
+
+    if (!hasSeenPopup) {
+      localStorage.setItem("popupShown", "true");
+
+      setTimeout(() => {
+        closePopup();
+      }, 10000);
+    } else {
+      popupOverlay.classList.add("hidden");
+    }
+    
+    popupClose.addEventListener("click", closePopup);
+
+    function closePopup() {
+      popupOverlay.classList.add("hidden");
+    }
   </script>
 </body>
 </html>
