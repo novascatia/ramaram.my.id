@@ -407,12 +407,15 @@ async function loadStream(cat, id, m) {
 
   const sources = res.data?.sources || [];
 
-  function applyEmbed(src) {
+function applyEmbed(src) {
     const url = src.embedUrl || src.embed || src.url || '';
     if (!url) return false;
-    ea.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay;encrypted-media;picture-in-picture" referrerpolicy="no-referrer"></iframe>`;
+    
+    // Use ONLY standard iframe properties
+    ea.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+    
     return true;
-  }
+}
 
   if (sources.length > 0) {
     applyEmbed(sources[0]);
