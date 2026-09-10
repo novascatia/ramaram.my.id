@@ -160,10 +160,17 @@
       align-items: center;
       z-index: 1000;
       opacity: 0;
-      animation: fadeInOverlay 0.3s ease forwards;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
-    @keyframes fadeInOverlay {
-      to { opacity: 1; }
+    .popup-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .popup-overlay.closing {
+      opacity: 0;
+      transition: opacity 3s ease-out;
+      pointer-events: none;
     }
     .popup-content {
       position: relative;
@@ -177,18 +184,18 @@
       flex-direction: column;
       align-items: center;
       gap: 20px;
-      animation: slideUp 0.4s ease forwards;
       backdrop-filter: blur(10px);
+      opacity: 0;
+      transform: scale(0.3) rotate(-10deg);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
     }
-    @keyframes slideUp {
-      from {
-        transform: translateY(30px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
+    .popup-overlay.visible .popup-content {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+    .popup-overlay.closing .popup-content {
+      opacity: 0;
+      transition: opacity 3s ease-out;
     }
     .popup-content img {
       max-width: 300px;
@@ -217,37 +224,6 @@
     .popup-close:hover {
       background: rgba(255, 255, 255, 0.2);
       color: #f1f1f1;
-    }
-    .popup-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .popup-overlay.thanos-snap {
-      opacity: 0 !important;
-    }
-    .popup-overlay.thanos-snap .popup-content {
-      opacity: 0 !important;
-    }
-
-    @keyframes popIn {
-      0% {
-        transform: scale(0.3) rotate(-10deg);
-        opacity: 0;
-      }
-      50% {
-        transform: scale(1.1) rotate(5deg);
-      }
-      100% {
-        transform: scale(1) rotate(0deg);
-        opacity: 1;
-      }
-    }
-    .popup-overlay:not(.hidden) {
-      animation: fadeInOverlay 0.3s ease forwards !important;
-    }
-    .popup-overlay:not(.hidden) .popup-content {
-      animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
     }
   </style>
 </head>
@@ -326,11 +302,10 @@
       if (!hasSeenPopupToday) {
         await preloadImage("cat.png");
         localStorage.setItem(todayKey, "true");
+        popupOverlay.classList.add("visible");
         setTimeout(() => {
           closePopupWithSnap();
         }, 10000);
-      } else {
-        popupOverlay.classList.add("hidden");
       }
     }
 
@@ -370,7 +345,7 @@
           { transform: "translate(0, 0) scale(1)", opacity: 1 },
           { transform: `translate(${endX}px, ${endY}px) scale(0)`, opacity: 0 }
         ], {
-          duration: 800 + Math.random() * 600,
+          duration: 2800 + Math.random() * 400,
           easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
           fill: "forwards"
         });
@@ -378,15 +353,16 @@
         container.appendChild(dust);
       }
 
-      setTimeout(() => container.remove(), 1500);
+      setTimeout(() => container.remove(), 3200);
     }
 
     function closePopupWithSnap() {
       createDustParticles();
-      popupOverlay.classList.add("thanos-snap");
+      popupOverlay.classList.remove("visible");
+      popupOverlay.classList.add("closing");
       setTimeout(() => {
-        popupOverlay.classList.add("hidden");
-      }, 500);
+        popupOverlay.classList.remove("closing");
+      }, 3000);
     }
 
     initPopup();
