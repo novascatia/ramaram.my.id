@@ -256,7 +256,6 @@
     </div>
   </div>
 
-  <!-- Popup -->
   <div class="popup-overlay" id="popupOverlay">
     <div class="popup-content">
       <button class="popup-close" id="popupClose">&times;</button>
@@ -282,6 +281,7 @@
 
     const popupOverlay = document.getElementById("popupOverlay");
     const popupClose = document.getElementById("popupClose");
+
     const hasSeenPopup = localStorage.getItem("popupShown");
 
     if (!hasSeenPopup) {
@@ -293,7 +293,7 @@
     } else {
       popupOverlay.classList.add("hidden");
     }
-    
+
     popupClose.addEventListener("click", closePopup);
 
     function closePopup() {
