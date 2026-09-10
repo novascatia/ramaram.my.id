@@ -150,27 +150,30 @@
 
     .popup-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       background: rgba(0, 0, 0, 0.6);
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       z-index: 1000;
       opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
     }
-    .popup-overlay.visible {
-      opacity: 1;
-      pointer-events: auto;
+    .popup-overlay.show {
+      display: flex;
     }
-    .popup-overlay.closing {
-      opacity: 0;
-      transition: opacity 5s ease-out;
-      pointer-events: none;
+    .popup-overlay.fade-in {
+      animation: fadeInPop 0.5s ease forwards;
+    }
+    .popup-overlay.fade-out {
+      animation: fadeOutPop 5s ease forwards;
+    }
+    @keyframes fadeInPop {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeOutPop {
+      from { opacity: 1; }
+      to { opacity: 0; }
     }
     .popup-content {
       position: relative;
@@ -184,18 +187,6 @@
       flex-direction: column;
       align-items: center;
       gap: 20px;
-      backdrop-filter: blur(10px);
-      opacity: 0;
-      transform: scale(0.3) rotate(-10deg);
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-    }
-    .popup-overlay.visible .popup-content {
-      opacity: 1;
-      transform: scale(1) rotate(0deg);
-    }
-    .popup-overlay.closing .popup-content {
-      opacity: 0;
-      transition: opacity 5s ease-out;
     }
     .popup-content img {
       max-width: 300px;
@@ -279,7 +270,6 @@
 
     const popupOverlay = document.getElementById("popupOverlay");
     const popupClose = document.getElementById("popupClose");
-    const popupImg = popupOverlay.querySelector("img");
 
     function getTodayKey() {
       const today = new Date();
@@ -295,6 +285,29 @@
       });
     }
 
+    let closeTimer = null;
+
+    function openPopup() {
+      popupOverlay.classList.add("show");
+      popupOverlay.classList.remove("fade-out");
+      popupOverlay.classList.add("fade-in");
+      document.body.style.overflow = "hidden";
+      closeTimer = setTimeout(closePopup, 10000);
+    }
+
+    function closePopup() {
+      clearTimeout(closeTimer);
+      popupOverlay.classList.remove("fade-in");
+      popupOverlay.classList.add("fade-out");
+      setTimeout(() => {
+        popupOverlay.classList.remove("show");
+        popupOverlay.classList.remove("fade-out");
+        document.body.style.overflow = "";
+      }, 5000);
+    }
+
+    popupClose.addEventListener("click", closePopup);
+
     async function initPopup() {
       const todayKey = getTodayKey();
       const hasSeenPopupToday = localStorage.getItem(todayKey);
@@ -302,21 +315,8 @@
       if (!hasSeenPopupToday) {
         await preloadImage("cat.png");
         localStorage.setItem(todayKey, "true");
-        popupOverlay.classList.add("visible");
-        setTimeout(() => {
-          closePopupWithSnap();
-        }, 10000);
+        openPopup();
       }
-    }
-
-    popupClose.addEventListener("click", closePopupWithSnap);
-
-    function closePopupWithSnap() {
-      popupOverlay.classList.remove("visible");
-      popupOverlay.classList.add("closing");
-      setTimeout(() => {
-        popupOverlay.classList.remove("closing");
-      }, 5000);
     }
 
     initPopup();
