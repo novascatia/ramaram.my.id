@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffff;
+        }
+        .logo {
+            font-size: 84px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            letter-spacing: -5px;
+        }
+        .logo span:nth-child(1) { color: #4285f4; }
+        .logo span:nth-child(2) { color: #ea4335; }
+        .logo span:nth-child(3) { color: #fbbc05; }
+        .logo span:nth-child(4) { color: #4285f4; }
+        .logo span:nth-child(5) { color: #34a853; }
+        .logo span:nth-child(6) { color: #ea4335; }
+        
+        .search-box {
+            width: 584px;
+            max-width: 90%;
+            display: flex;
+            align-items: center;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 0 14px;
+            height: 44px;
+            box-shadow: none;
+            transition: box-shadow 0.3s;
+        }
+        .search-box:hover {
+            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+            border-color: rgba(223,225,229,0);
+        }
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background: transparent;
+        }
+        .buttons {
+            margin-top: 30px;
+        }
+        .btn {
+            background-color: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            border-radius: 4px;
+            color: #3c4043;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 11px 4px;
+            padding: 0 16px;
+            line-height: 27px;
+            height: 36px;
+            min-width: 54px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .btn:hover {
+            box-shadow: 0 1px 1px rgba(0,0,0,.1);
+            background-color: #f8f9fa;
+            border: 1px solid #dadce0;
+            color: #202124;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo">
+        <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+    </div>
+
+    <form action="https://www.google.com/search" method="GET" target="_blank">
+        <div class="search-box">
+            <input type="text" name="q" class="search-input" autofocus autocomplete="off" placeholder="Cari di Google...">
+        </div>
+        <div class="buttons" style="text-align: center;">
+            <input type="submit" class="btn" value="Google Search">
+            <input type="submit" class="btn" name="btnI" value="I'm Feeling Lucky">
+        </div>
+    </form>
+
+</body>
+</html>
