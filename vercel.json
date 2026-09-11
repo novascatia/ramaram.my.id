@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/search", "destination": "/search.html" },
     { "source": "/project", "destination": "/project.html" },
     { "source": "/stream", "destination": "/stream.html" }
   ]
