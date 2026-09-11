@@ -1,10 +1,5 @@
 {
   "rewrites": [
-    { "source": "/notfound.jpeg", "destination": "/404.html" },
-    { "source": "/novastream.jpg", "destination": "/404.html" },
-    { "source": "/project.png", "destination": "/404.html" },
-    { "source": "/stream.png", "destination": "/404.html" },
-    { "source": "/talkify.jpg", "destination": "/404.html" },
     { "source": "/project", "destination": "/project.html" },
     { "source": "/stream", "destination": "/stream.html" }
   ]
