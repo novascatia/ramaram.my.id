@@ -1,444 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RamaSRC</title>
-<link rel="icon" type="image/png" href="stream.png">
-<link rel="shortcut icon" type="image/png" href="stream.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --accent: #ff4444;
-    --muted: #777777;
-    --text: #eeeeee;
-    --bg-dark: #111111;
-    --bg-panel: #161616;
-    --border: #222222;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta property="og:image" content="logo.png" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="shortcut icon" type="image/png" href="logo.png" />
   
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { 
-    background: var(--bg-dark); 
-    color: var(--text); 
-    font-family: 'Inter', sans-serif; 
-    font-size: 13px; 
-    line-height: 1.5; 
-    min-height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
-    zoom: 75%;
-  }
+  <title>ramaram - browser</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d0d0d;
+      color: #999;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    
+    /* Nav / Search Bar Area */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(13, 13, 13, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .navcontent {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .nav-logo {
+      color: #f1f1f1;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .search-form {
+      flex: 1;
+      display: flex;
+    }
+    .search-box {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0 12px;
+      height: 38px;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .search-box:focus-within {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 0.85rem;
+      background: transparent;
+      color: #f1f1f1;
+      font-family: 'Inter', sans-serif;
+    }
+    .search-input::placeholder {
+      color: #555;
+    }
 
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #555; }
+    /* Main Content / Home State */
+    .container {
+      padding: 160px 24px 80px;
+      max-width: 580px;
+      margin: 0 auto;
+      text-align: center;
+      transition: opacity 0.3s ease;
+    }
+    .container.hidden {
+      display: none;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #666;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #f1f1f1;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    p { 
+      margin-bottom: 28px; 
+      color: #888;
+      font-size: 0.9rem;
+    }
 
-  header { display: flex; justify-content: space-between; align-items: center; padding: 18px 32px; border-bottom: 1px solid var(--border); }
-  .logo { font-size: 1.15rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-  .logo-icon { color: var(--accent); font-size: 0.85rem; }
-  .live-badge { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.5px; }
-  .live-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
-  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-  
-  .cat-bar { padding: 14px 32px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; overflow-x: auto;}
-  .cat-btn { background: transparent; border: 1px solid #333; color: var(--muted); padding: 6px 16px; border-radius: 16px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.8rem; transition: 0.2s;}
-  .cat-btn.active { background: var(--text); color: var(--bg-dark); border-color: var(--text); }
-
-  .main { display: flex; flex: 1; overflow: hidden; flex-direction: column; }
-  @media (min-width: 900px) { .main { flex-direction: row; } }
-  
-  .player-side { flex: 2; padding: 28px; overflow-y: auto; }
-  .video-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
-  #embedArea { width: 100%; height: 100%; }
-  #embedArea iframe { width: 100%; height: 100%; border: none; }
-  
-  .match-bar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
-  @media (min-width: 768px) { .match-bar { flex-direction: row; justify-content: space-between; align-items: center; } }
-  .match-bar-teams { font-size: 1.15rem; font-weight: 500; display: flex; align-items: center; gap: 12px; }
-  .match-bar-meta { color: var(--muted); font-size: 0.8rem; }
-  .mbt { display: flex; align-items: center; gap: 10px; }
-  .mbt img { width: 26px; height: 26px; object-fit: contain; }
-  .vs-sep { font-size: 0.8rem; color: var(--muted); font-weight: 400; }
-  
-  .stream-switcher { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-  .stream-btn { background: var(--bg-dark); border: 1px solid #333; color: var(--muted); padding: 7px 14px; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.8rem; transition: 0.2s; }
-  .stream-btn:hover { border-color: #555; color: var(--text); }
-  .stream-btn.active { border-color: var(--text); color: var(--text); }
-
-  .sidebar { flex: 1.2; border-top: 1px solid var(--border); display: flex; flex-direction: column; background: var(--bg-dark); max-height: 100vh; }
-  @media (min-width: 900px) { .sidebar { border-top: none; border-left: 1px solid var(--border); } }
-  .sidebar-header { padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); font-weight: 500; font-size: 0.95rem; }
-  .match-count { color: var(--muted); font-size: 0.8rem; }
-  
-  .search-wrap { padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-  .search-input { width: 100%; background: transparent; border: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none; }
-  .search-input::placeholder { color: #555; }
-  
-  .match-list { flex: 1; overflow-y: auto; padding: 18px 24px; display: flex; flex-direction: column; gap: 12px; }
-  
-  .match-item { display: flex; align-items: center; padding: 14px 16px; background: var(--bg-panel); border-radius: 8px; cursor: pointer; transition: 0.2s; border: 1px solid var(--border); gap: 16px; }
-  .match-item:hover { border-color: #444; background: #1c1c1c; }
-  .match-item.selected { border-color: var(--text); background: #1c1c1c; }
-  
-  .match-time { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 55px; font-size: 0.8rem; color: var(--muted); text-align: center; }
-  .match-teams-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  .team-row { display: flex; align-items: center; gap: 10px; }
-  .team-badge { width: 22px; height: 22px; object-fit: contain; }
-  .team-name { font-size: 0.85rem; color: var(--text); }
-  
-  .play-btn { color: #444; font-size: 0.75rem; transition: 0.2s; }
-  .match-item:hover .play-btn, .match-item.selected .play-btn { color: var(--text); }
-  
-  .pinned-section { display: flex; flex-direction: column; gap: 10px; margin-bottom: 6px; }
-  .pinned-banner { padding: 10px 14px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-  .banner-indo { background: rgba(255, 68, 68, 0.08); border: 1px solid rgba(255, 68, 68, 0.2); color: var(--accent); }
-  .banner-mu { background: rgba(255, 68, 68, 0.08); border: 1px solid rgba(255, 68, 68, 0.2); color: var(--accent); }
-  .indo-highlight, .mu-highlight { font-weight: 700; color: var(--accent); }
-  
-  .list-divider { height: 1px; background: var(--border); margin: 8px 0 18px 0; width: 100%; }
-
-  .loader { display: flex; justify-content: center; padding: 30px; }
-  .spinner { width: 24px; height: 24px; border: 2px solid #333; border-top-color: var(--text); border-radius: 50%; animation: spin 1s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-</style>
+    /* Iframe View State */
+    #view-frame {
+      display: none;
+      width: 100%;
+      height: calc(100vh - 71px);
+      border: none;
+      background: #0d0d0d;
+      margin-top: 71px;
+    }
+    #view-frame.show {
+      display: block;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <div class="logo"><span class="logo-icon">▶</span> RamaSRC</div>
-  <div class="live-badge"><div class="live-dot"></div>LIVE</div>
-</header>
-
-<div class="cat-bar" id="catBar">
-  <button class="cat-btn active" data-cat="football">Football</button>
-</div>
-
-<div class="main" id="mainLayout">
-  <div class="player-side" id="playerSide">
-    <div class="stream-area" id="tabStream">
-      <div id="playerBox">
-        <div class="video-wrap">
-          <div id="embedArea">
-             <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);">Select a match to watch</div>
-          </div>
+  <nav id="navbar">
+    <div class="navcontent">
+      <a href="#" class="nav-logo" onclick="resetHome(event)">[rama]</a>
+      <form class="search-form" onsubmit="handleSearch(event)">
+        <div class="search-box">
+          <input type="text" id="query" class="search-input" autofocus autocomplete="off" placeholder="Ketik URL atau kata kunci...">
         </div>
-        <div class="match-bar">
-          <div class="match-bar-teams" id="matchBarTeams">Select a match to watch</div>
-          <div class="match-bar-meta" id="matchBarMeta"></div>
-        </div>
-        <div class="stream-switcher" id="streamSwitcher" style="display:none;"></div>
-      </div>
+      </form>
     </div>
+  </nav>
+
+  <!-- Initial Landing / Home Content -->
+  <div class="container" id="main-container">
+    <div class="hero-tag">Private Workspace</div>
+    <h1>Embedded Viewer</h1>
+    <p>Masukkan URL atau kata kunci pada bilah di atas untuk mulai melihat halaman web langsung di dalam situs ini tanpa meninggalkan jejak riwayat lokal.</p>
   </div>
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <span>Up Next</span>
-      <span class="match-count" id="matchCount">0 matches</span>
-    </div>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" id="searchInput" type="text" placeholder="Search teams or events..." autocomplete="off">
-    </div>
-    <div class="match-list" id="matchList">
-      <div class="loader"><div class="spinner"></div></div>
-    </div>
-  </div>
-</div>
 
-<script>
-const apiProxy = '/api/sportsrc-proxy';
-let currentCategory = 'football';
-let allMatches = [];
+  <!-- Embed Frame Area -->
+  <iframe id="view-frame" name="view-frame"></iframe>
 
-const countryCodes = {
-  "indonesia": "id", "mexico": "mx", "england": "gb-eng", "spain": "es",
-  "italy": "it", "germany": "de", "france": "fr", "brazil": "br",
-  "argentina": "ar", "portugal": "pt", "netherlands": "nl", "belgium": "be",
-  "croatia": "hr", "uruguay": "uy", "usa": "us", "united states": "us", "japan": "jp",
-  "south korea": "kr", "korea republic": "kr", "saudi arabia": "sa", "australia": "au",
-  "qatar": "qa", "malaysia": "my", "thailand": "th", "vietnam": "vn", "singapore": "sg",
-  "philippines": "ph", "myanmar": "mm", "cambodia": "kh", "scotland": "gb-sct",
-  "wales": "gb-wls", "ireland": "ie", "switzerland": "ch", "denmark": "dk",
-  "sweden": "se", "norway": "no", "finland": "fi", "poland": "pl", "ukraine": "ua",
-  "austria": "at", "turkey": "tr", "morocco": "ma", "senegal": "sn", "egypt": "eg",
-  "ghana": "gh", "cameroon": "cm", "colombia": "co", "chile": "cl", "peru": "pe",
-  "ecuador": "ec", "paraguay": "py", "venezuela": "ve", "bolivia": "bo", "canada": "ca",
-  "china": "cn", "india": "in", "iraq": "iq", "iran": "ir", "uae": "ae", "uzbekistan": "uz",
-  "bahrain": "bh", "oman": "om", "jordan": "jo", "syria": "sy", "lebanon": "lb", "palestine": "ps"
-};
+  <script>
+    const navbar = document.getElementById("navbar");
+    const mainContainer = document.getElementById("main-container");
+    const viewFrame = document.getElementById("view-frame");
+    const queryInput = document.getElementById("query");
 
-function getFallbackIcon(name) {
-  if (!name) return 'notfound.jpeg';
-  let cleanName = name.toLowerCase()
-    .replace(/u-?\d+/g, '')
-    .replace(/\b(women|men|fc|timnas)\b/g, '')
-    .trim();
-    
-  if (countryCodes[cleanName]) {
-    return `https://flagcdn.com/w40/${countryCodes[cleanName]}.png`;
-  }
-  return 'notfound.jpeg';
-}
+    function handleSearch(event) {
+      event.preventDefault();
+      const inputVal = queryInput.value.trim();
+      if (!inputVal) return;
 
-window.getFallbackIcon = getFallbackIcon;
-
-document.getElementById('searchInput').addEventListener('input', e => {
-  const queryText = e.target.value.trim().toLowerCase();
-  renderList(queryText ? allMatches.filter(m => matchLabel(m).toLowerCase().includes(queryText)) : allMatches);
-});
-
-async function apiFetch(params) {
-  try {
-    const res = await fetch(apiProxy + '?' + new URLSearchParams(params));
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return await res.json();
-  } catch(e) { return { error: e.message }; }
-}
-
-function getHome(m) { return m.teams?.home?.name || m.title?.split(' vs ')[0] || m.title || '?'; }
-
-function getAway(m) { 
-  if (m.teams?.away?.name) return m.teams.away.name;
-  if (m.title?.includes(' vs ')) return m.title.split(' vs ')[1];
-  return null;
-}
-
-function matchLabel(m) { 
-  const h = getHome(m);
-  const a = getAway(m);
-  return a ? h + ' ' + a : h;
-}
-
-function getPinType(m) {
-  const label = matchLabel(m).toLowerCase();
-  if (label.includes('manchester united')) return 'MU';
-  if (label.includes('indonesia')) return 'INDO';
-  return null;
-}
-
-function formatTime(ms) {
-  return new Date(ms).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
-}
-
-function formatDateShort(ms) {
-  return new Date(ms).toLocaleDateString('en-GB', { day:'numeric', month:'short', timeZone:'Asia/Jakarta' });
-}
-
-function formatDateTimeFull(ms) {
-  return new Date(ms).toLocaleString('en-US', { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
-}
-
-function badgeImg(url, alt) {
-  const fallbackUrl = getFallbackIcon(alt);
-  if (!url) {
-    return `<img class="team-badge" src="${fallbackUrl}" alt="${alt}" onerror="this.onerror=null;this.src='notfound.jpeg';">`;
-  }
-  return `<img class="team-badge" src="${url}" alt="${alt}" onerror="if(this.src!=='${fallbackUrl}') { this.src='${fallbackUrl}'; } else { this.onerror=null; this.src='notfound.jpeg'; }">`;
-}
-
-async function loadMatches(cat) {
-  document.getElementById('matchList').innerHTML = '<div class="loader"><div class="spinner"></div></div>';
-  const res = await apiFetch({ data: 'matches', category: cat });
-  if (res.error || !res.success) {
-    document.getElementById('matchList').innerHTML = '<div style="padding:20px; color:#ff6b6b; text-align:center;">Failed to load: ' + (res.error||'') + '</div>';
-    return;
-  }
-  allMatches = res.data || [];
-  document.getElementById('matchCount').textContent = allMatches.length + ' matches';
-  renderList(allMatches);
-}
-
-function renderList(matches) {
-  const list = document.getElementById('matchList');
-  if (!matches.length) { list.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--muted); font-size: 13px;">No matches found.</div>'; return; }
-
-  const pinnedMU = matches.filter(m => getPinType(m) === 'MU');
-  const pinnedIndo = matches.filter(m => getPinType(m) === 'INDO');
-  const rest = matches.filter(m => !getPinType(m));
-  
-  list.innerHTML = '';
-
-  if (pinnedIndo.length) {
-    const group = document.createElement('div');
-    group.className = 'pinned-section';
-    const banner = document.createElement('div');
-    banner.className = 'pinned-banner banner-indo';
-    banner.innerHTML = `<img src="logo.png" style="width:15px; height:15px; object-fit:contain;" alt=""> <span>Pinned by Garuda Fans</span>`;
-    group.appendChild(banner);
-    pinnedIndo.forEach(m => group.appendChild(makeItem(m, 'INDO')));
-    list.appendChild(group);
-  }
-
-  if (pinnedMU.length) {
-    const group = document.createElement('div');
-    group.className = 'pinned-section';
-    const banner = document.createElement('div');
-    banner.className = 'pinned-banner banner-mu';
-    banner.innerHTML = `<img src="logo.png" style="width:15px; height:15px; object-fit:contain;" alt=""> <span>Pinned by The Reds</span>`;
-    group.appendChild(banner);
-    pinnedMU.forEach(m => group.appendChild(makeItem(m, 'MU')));
-    list.appendChild(group);
-  }
-
-  if ((pinnedIndo.length || pinnedMU.length) && rest.length) {
-    const divider = document.createElement('div');
-    divider.className = 'list-divider';
-    list.appendChild(divider);
-  }
-
-  rest.forEach(m => list.appendChild(makeItem(m, null)));
-}
-
-function makeItem(m, pinType) {
-  const el = document.createElement('div');
-  el.className = 'match-item';
-  
-  const home = getHome(m);
-  const away = getAway(m);
-  const isSingle = !away || away === '?';
-
-  const isLive = m.live === true;
-  let timeDisplay = 'TBD';
-  if (isLive) {
-    timeDisplay = '<span style="color:var(--accent); font-weight:700;">LIVE</span>';
-  } else if (m.date) {
-    timeDisplay = `<span style="font-size:10px; display:block; margin-bottom:3px; opacity:0.7;">${formatDateShort(m.date)}</span><span>${formatTime(m.date).replace(' WIB', '')}</span>`;
-  }
-  
-  const homeHighlight = (pinType === 'MU' && home.toLowerCase().includes('manchester united')) || (pinType === 'INDO' && home.toLowerCase().includes('indonesia'));
-  const hClass = homeHighlight ? (pinType === 'MU' ? ' mu-highlight' : ' indo-highlight') : '';
-
-  let teamsHtml = '';
-  if (isSingle) {
-    teamsHtml = `<div class="team-row">${badgeImg(m.teams?.home?.badge,home)}<span class="team-name single-event-title ${hClass}">${home}</span></div>`;
-  } else {
-    const awayHighlight = (pinType === 'MU' && away.toLowerCase().includes('manchester united')) || (pinType === 'INDO' && away.toLowerCase().includes('indonesia'));
-    const aClass = awayHighlight ? (pinType === 'MU' ? ' mu-highlight' : ' indo-highlight') : '';
-    teamsHtml = 
-      `<div class="team-row">${badgeImg(m.teams?.home?.badge,home)}<span class="team-name${hClass}">${home}</span></div>` +
-      `<div class="team-row">${badgeImg(m.teams?.away?.badge,away)}<span class="team-name${aClass}">${away}</span></div>`;
-  }
-
-  el.innerHTML =
-    `<div class="match-time">${timeDisplay}</div>` +
-    `<div class="match-teams-col">` + teamsHtml + `</div>` +
-    `<div class="play-btn">▶</div>`;
-
-  el.addEventListener('click', () => {
-    document.querySelectorAll('.match-item').forEach(i => i.classList.remove('selected'));
-    el.classList.add('selected');
-    
-    document.getElementById('mainLayout').classList.add('active-player');
-    
-    if (window.innerWidth <= 900) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    
-    loadStream(m.category || currentCategory, m.id, m);
-  });
-  return el;
-}
-
-async function loadStream(cat, id, m) {
-  const home = getHome(m);
-  const away = getAway(m);
-  const isSingle = !away || away === '?';
-
-  let matchBarTeamsHtml = '';
-  if (isSingle) {
-    matchBarTeamsHtml = `<div class="mbt">${badgeImg(m.teams?.home?.badge,home)}<span>${home}</span></div>`;
-  } else {
-    matchBarTeamsHtml = 
-      `<div class="mbt">${badgeImg(m.teams?.home?.badge,home)}<span>${home}</span></div>` +
-      `<span class="vs-sep">VS</span>` +
-      `<div class="mbt"><span>${away}</span>${badgeImg(m.teams?.away?.badge,away)}</div>`;
-  }
-
-  document.getElementById('matchBarTeams').innerHTML = matchBarTeamsHtml;
-  document.getElementById('matchBarMeta').textContent = m.live ? '🔴 LIVE STREAM' : (m.date ? formatDateTimeFull(m.date) : 'Upcoming');
-
-  const ea = document.getElementById('embedArea');
-  ea.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div class="spinner"></div></div>';
-  const sw = document.getElementById('streamSwitcher');
-  sw.style.display = 'none'; sw.innerHTML = '';
-
-  if (m.date && !m.live) {
-    const diff = m.date - Date.now();
-    if (diff > 10 * 60 * 1000) {
-      const countdownId = 'cd_' + Date.now();
-      ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center; background:#0f0f0f;">
-        <div style="font-size:36px">⏳</div>
-        <div style="font-size:22px; font-weight:700; color:var(--text)">STREAM NOT READY</div>
-        <div style="font-size:13px; color:var(--muted); max-width:300px; line-height:1.5;">You can access the stream 10 minutes before the match starts!</div>
-        <div style="font-size:15px; font-weight:500; color:var(--accent); margin-top:10px;" id="${countdownId}"></div>
-      </div>`;
-
-      function fmtCountdown() {
-        const rem = m.date - Date.now();
-        if (rem <= 0) return null;
-        const totalSec = Math.floor(rem / 1000);
-        const h = Math.floor(totalSec / 3600);
-        const min = Math.floor((totalSec % 3600) / 60);
-        const sec = totalSec % 60;
-        return (h > 0 ? `${h}h ` : '') + `${min}m ${String(sec).padStart(2,'0')}s`;
+      let targetUrl = "";
+      
+      if (inputVal.startsWith("http://") || inputVal.startsWith("https://")) {
+        targetUrl = inputVal;
+      } else if (inputVal.includes(".") && !inputVal.includes(" ")) {
+        targetUrl = "https://" + inputVal;
+      } else {
+        // Menggunakan DuckDuckGo sebagai alternatif mesin pencari ramah iframe dibanding Google
+        targetUrl = "https://html.duckduckgo.com/html/?q=" + encodeURIComponent(inputVal);
       }
 
-      const el = document.getElementById(countdownId);
-      if (el) el.textContent = 'Starts in: ' + (fmtCountdown() || '');
-
-      const timer = setInterval(() => {
-        const el = document.getElementById(countdownId);
-        if (!el) { clearInterval(timer); return; }
-        const val = fmtCountdown();
-        if (!val) { clearInterval(timer); el.textContent = 'Starting now!'; return; }
-        el.textContent = 'Starts in: ' + val;
-      }, 1000);
-      return;
+      mainContainer.classList.add("hidden");
+      viewFrame.classList.add("show");
+      viewFrame.src = targetUrl;
     }
-  }
 
-  const res = await apiFetch({ data: 'detail', category: cat, id });
-  if (res.error || !res.success) {
-    ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ff6b6b;font-weight:500;">Failed to load video: ${res.error||''}</div>`;
-    return;
-  }
-
-  const sources = res.data?.sources || [];
-
-function applyEmbed(src) {
-    const url = src.embedUrl || src.embed || src.url || '';
-    if (!url) return false;
-    
-    // Use ONLY standard iframe properties
-    ea.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
-    
-    return true;
-}
-
-  if (sources.length > 0) {
-    applyEmbed(sources[0]);
-    if (sources.length > 1) {
-      sw.style.display = 'flex';
-      sources.forEach((s, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'stream-btn' + (i === 0 ? ' active' : '');
-        btn.textContent = (s.name || 'Server ' + (s.streamNo || i+1)) + (s.hd ? ' [HD]' : '');
-        btn.addEventListener('click', () => {
-          sw.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          applyEmbed(s);
-        });
-        sw.appendChild(btn);
-      });
+    function resetHome(event) {
+      event.preventDefault();
+      viewFrame.src = "";
+      viewFrame.classList.remove("show");
+      mainContainer.classList.remove("hidden");
+      queryInput.value = "";
     }
-  } else {
-    ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);">Stream not available yet. [SportSRC side]</div>`;
-  }
-}
-
-loadMatches(currentCategory);
-</script>
+  </script>
 </body>
 </html>
