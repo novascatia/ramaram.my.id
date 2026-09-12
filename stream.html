@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>RamaSRC V2</title>
 <link rel="icon" type="image/png" href="stream.png">
 <link rel="shortcut icon" type="image/png" href="stream.png">
@@ -54,7 +53,7 @@
   .player-side { flex: 2; padding: 28px; overflow-y: auto; }
   .video-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
   #embedArea { width: 100%; height: 100%; }
-  #embedArea iframe { width: 100%; height: 100%; border: none; }
+  #embedArea iframe { width: 100%; height: 100%; border: none; display: block; }
   
   .match-bar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
   @media (min-width: 768px) { .match-bar { flex-direction: row; justify-content: space-between; align-items: center; } }
@@ -264,6 +263,23 @@ async function loadMatches(cat) {
 
   document.getElementById('matchCount').textContent = allMatches.length + ' matches';
   renderList(allMatches);
+  
+  // Check if there's a match ID in URL and load it
+  const urlParams = new URLSearchParams(window.location.search);
+  const matchId = urlParams.get('id');
+  if (matchId) {
+    const matchToLoad = allMatches.find(m => m.id === matchId);
+    if (matchToLoad) {
+      setTimeout(() => {
+        loadStream(matchToLoad.id, matchToLoad);
+        const matchItem = document.querySelector(`[data-match-id="${matchId}"]`);
+        if (matchItem) {
+          document.querySelectorAll('.match-item').forEach(i => i.classList.remove('selected'));
+          matchItem.classList.add('selected');
+        }
+      }, 500);
+    }
+  }
 }
 
 function renderList(matches) {
@@ -310,6 +326,7 @@ function renderList(matches) {
 function makeItem(m, pinType) {
   const el = document.createElement('div');
   el.className = 'match-item';
+  el.setAttribute('data-match-id', m.id);
   
   const home = getHome(m);
   const away = getAway(m);
@@ -347,6 +364,9 @@ function makeItem(m, pinType) {
     el.classList.add('selected');
     
     document.getElementById('mainLayout').classList.add('active-player');
+    
+    // Update URL with match ID
+    window.history.pushState({}, '', `?id=${m.id}`);
     
     if (window.innerWidth <= 900) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -426,13 +446,13 @@ async function loadStream(matchId, m) {
   const sources = res.data?.sources || [];
 
   function applyEmbed(src) {
-  const url = src.embedUrl || src.embed_url || src.embed || src.url || '';
-  if (!url) return false;
-  
-  console.log('Loading embed:', url);
-  ea.innerHTML = `<iframe src="${url}"></iframe>`;
-  return true;
-}
+    const url = src.embedUrl || src.embed_url || src.embed || src.url || '';
+    if (!url) return false;
+    
+    console.log('Loading embed:', url);
+    ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>`;
+    return true;
+  }
 
   if (sources.length > 0) {
     applyEmbed(sources[0]);
