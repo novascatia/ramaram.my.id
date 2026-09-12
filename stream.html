@@ -449,7 +449,7 @@ function applyEmbed(src) {
   if (!url) return false;
   
   console.log('Loading embed:', url);
-  ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-popups allow-modals" allowfullscreen></iframe>`;
   return true;
 }
 
