@@ -444,14 +444,14 @@ async function loadStream(matchId, m) {
   console.log('Detail response:', res.data);
   const sources = res.data?.sources || [];
 
-  function applyEmbed(src) {
-    const url = src.embedUrl || src.embed_url || src.embed || src.url || '';
-    if (!url) return false;
-    
-    console.log('Loading embed:', url);
-    ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>`;
-    return true;
-  }
+function applyEmbed(src) {
+  const url = src.embedUrl || src.embed_url || src.embed || src.url || '';
+  if (!url) return false;
+  
+  console.log('Loading embed:', url);
+  ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  return true;
+}
 
   if (sources.length > 0) {
     applyEmbed(sources[0]);
