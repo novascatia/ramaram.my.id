@@ -194,12 +194,16 @@ async function apiFetch(params) {
     const res = await fetch(apiProxy + '?' + new URLSearchParams(params));
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
-  } catch(e) { return { error: e.message }; }
+  } catch(e) { 
+    console.error('API Error:', e);
+    return { error: e.message }; 
+  }
 }
 
-function getHome(m) { return m.teams?.home?.name || m.title?.split(' vs ')[0] || m.title || '?'; }
+function getHome(m) { return m.home_name || m.teams?.home?.name || m.title?.split(' vs ')[0] || m.title || '?'; }
 
 function getAway(m) { 
+  if (m.away_name) return m.away_name;
   if (m.teams?.away?.name) return m.teams.away.name;
   if (m.title?.includes(' vs ')) return m.title.split(' vs ')[1];
   return null;
@@ -219,15 +223,15 @@ function getPinType(m) {
 }
 
 function formatTime(ms) {
-  return new Date(ms).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
+  return new Date(ms * 1000).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
 }
 
 function formatDateShort(ms) {
-  return new Date(ms).toLocaleDateString('en-GB', { day:'numeric', month:'short', timeZone:'Asia/Jakarta' });
+  return new Date(ms * 1000).toLocaleDateString('en-GB', { day:'numeric', month:'short', timeZone:'Asia/Jakarta' });
 }
 
 function formatDateTimeFull(ms) {
-  return new Date(ms).toLocaleString('en-US', { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
+  return new Date(ms * 1000).toLocaleString('en-US', { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' }) + ' WIB';
 }
 
 function badgeImg(url, alt) {
@@ -240,7 +244,7 @@ function badgeImg(url, alt) {
 
 async function loadMatches(cat) {
   document.getElementById('matchList').innerHTML = '<div class="loader"><div class="spinner"></div></div>';
-  const res = await apiFetch({ data: 'matches', category: cat });
+  const res = await apiFetch({ type: 'matches', sport: 'football', status: 'inprogress' });
   if (res.error || !res.success) {
     document.getElementById('matchList').innerHTML = '<div style="padding:20px; color:#ff6b6b; text-align:center;">Failed to load: ' + (res.error||'') + '</div>';
     return;
@@ -299,12 +303,12 @@ function makeItem(m, pinType) {
   const away = getAway(m);
   const isSingle = !away || away === '?';
 
-  const isLive = m.live === true;
+  const isLive = m.status === 'inprogress';
   let timeDisplay = 'TBD';
   if (isLive) {
     timeDisplay = '<span style="color:var(--accent); font-weight:700;">LIVE</span>';
-  } else if (m.date) {
-    timeDisplay = `<span style="font-size:10px; display:block; margin-bottom:3px; opacity:0.7;">${formatDateShort(m.date)}</span><span>${formatTime(m.date).replace(' WIB', '')}</span>`;
+  } else if (m.start_time) {
+    timeDisplay = `<span style="font-size:10px; display:block; margin-bottom:3px; opacity:0.7;">${formatDateShort(m.start_time)}</span><span>${formatTime(m.start_time).replace(' WIB', '')}</span>`;
   }
   
   const homeHighlight = (pinType === 'MU' && home.toLowerCase().includes('manchester united')) || (pinType === 'INDO' && home.toLowerCase().includes('indonesia'));
@@ -312,13 +316,13 @@ function makeItem(m, pinType) {
 
   let teamsHtml = '';
   if (isSingle) {
-    teamsHtml = `<div class="team-row">${badgeImg(m.teams?.home?.badge,home)}<span class="team-name single-event-title ${hClass}">${home}</span></div>`;
+    teamsHtml = `<div class="team-row">${badgeImg(m.home_logo,home)}<span class="team-name single-event-title ${hClass}">${home}</span></div>`;
   } else {
     const awayHighlight = (pinType === 'MU' && away.toLowerCase().includes('manchester united')) || (pinType === 'INDO' && away.toLowerCase().includes('indonesia'));
     const aClass = awayHighlight ? (pinType === 'MU' ? ' mu-highlight' : ' indo-highlight') : '';
     teamsHtml = 
-      `<div class="team-row">${badgeImg(m.teams?.home?.badge,home)}<span class="team-name${hClass}">${home}</span></div>` +
-      `<div class="team-row">${badgeImg(m.teams?.away?.badge,away)}<span class="team-name${aClass}">${away}</span></div>`;
+      `<div class="team-row">${badgeImg(m.home_logo,home)}<span class="team-name${hClass}">${home}</span></div>` +
+      `<div class="team-row">${badgeImg(m.away_logo,away)}<span class="team-name${aClass}">${away}</span></div>`;
   }
 
   el.innerHTML =
@@ -336,36 +340,36 @@ function makeItem(m, pinType) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
-    loadStream(m.category || currentCategory, m.id, m);
+    loadStream(m.id, m);
   });
   return el;
 }
 
-async function loadStream(cat, id, m) {
+async function loadStream(matchId, m) {
   const home = getHome(m);
   const away = getAway(m);
   const isSingle = !away || away === '?';
 
   let matchBarTeamsHtml = '';
   if (isSingle) {
-    matchBarTeamsHtml = `<div class="mbt">${badgeImg(m.teams?.home?.badge,home)}<span>${home}</span></div>`;
+    matchBarTeamsHtml = `<div class="mbt">${badgeImg(m.home_logo,home)}<span>${home}</span></div>`;
   } else {
     matchBarTeamsHtml = 
-      `<div class="mbt">${badgeImg(m.teams?.home?.badge,home)}<span>${home}</span></div>` +
+      `<div class="mbt">${badgeImg(m.home_logo,home)}<span>${home}</span></div>` +
       `<span class="vs-sep">VS</span>` +
-      `<div class="mbt"><span>${away}</span>${badgeImg(m.teams?.away?.badge,away)}</div>`;
+      `<div class="mbt"><span>${away}</span>${badgeImg(m.away_logo,away)}</div>`;
   }
 
   document.getElementById('matchBarTeams').innerHTML = matchBarTeamsHtml;
-  document.getElementById('matchBarMeta').textContent = m.live ? '🔴 LIVE STREAM' : (m.date ? formatDateTimeFull(m.date) : 'Upcoming');
+  document.getElementById('matchBarMeta').textContent = m.status === 'inprogress' ? '🔴 LIVE STREAM' : (m.start_time ? formatDateTimeFull(m.start_time) : 'Upcoming');
 
   const ea = document.getElementById('embedArea');
   ea.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div class="spinner"></div></div>';
   const sw = document.getElementById('streamSwitcher');
   sw.style.display = 'none'; sw.innerHTML = '';
 
-  if (m.date && !m.live) {
-    const diff = m.date - Date.now();
+  if (m.start_time && m.status !== 'inprogress') {
+    const diff = (m.start_time * 1000) - Date.now();
     if (diff > 10 * 60 * 1000) {
       const countdownId = 'cd_' + Date.now();
       ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center; background:#0f0f0f;">
@@ -376,7 +380,7 @@ async function loadStream(cat, id, m) {
       </div>`;
 
       function fmtCountdown() {
-        const rem = m.date - Date.now();
+        const rem = (m.start_time * 1000) - Date.now();
         if (rem <= 0) return null;
         const totalSec = Math.floor(rem / 1000);
         const h = Math.floor(totalSec / 3600);
@@ -399,7 +403,7 @@ async function loadStream(cat, id, m) {
     }
   }
 
-  const res = await apiFetch({ data: 'detail', category: cat, id });
+  const res = await apiFetch({ type: 'detail', id: matchId });
   if (res.error || !res.success) {
     ea.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ff6b6b;font-weight:500;">Failed to load video: ${res.error||''}</div>`;
     return;
@@ -407,15 +411,14 @@ async function loadStream(cat, id, m) {
 
   const sources = res.data?.sources || [];
 
-function applyEmbed(src) {
-    const url = src.embedUrl || src.embed || src.url || '';
+  function applyEmbed(src) {
+    const url = src.embed_url || src.embed || src.url || '';
     if (!url) return false;
     
-    // Use ONLY standard iframe properties
+    // Use only standard iframe properties
     ea.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
-    
     return true;
-}
+  }
 
   if (sources.length > 0) {
     applyEmbed(sources[0]);
@@ -424,7 +427,7 @@ function applyEmbed(src) {
       sources.forEach((s, i) => {
         const btn = document.createElement('button');
         btn.className = 'stream-btn' + (i === 0 ? ' active' : '');
-        btn.textContent = (s.name || 'Server ' + (s.streamNo || i+1)) + (s.hd ? ' [HD]' : '');
+        btn.textContent = (s.name || 'Server ' + (s.stream_no || i+1)) + (s.hd ? ' [HD]' : '');
         btn.addEventListener('click', () => {
           sw.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
