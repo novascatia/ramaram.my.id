@@ -1,16 +1,18 @@
 export default async function handler(req, res) {
   try {
-    const params = req.query || {};
     const apiKey = process.env.sportsrc_api_key;
     
     if (!apiKey) {
+      console.error('API key not found');
       return res.status(500).json({ error: 'API key not configured' });
     }
     
+    const params = req.query || {};
     const query = new URLSearchParams(params).toString();
     const url = `https://api.sportsrc.org/v2/?${query}`;
 
-    console.log('Fetching:', url);
+    console.log('=== SportSRC Proxy ===');
+    console.log('Request URL:', url);
     console.log('Params:', params);
 
     const response = await fetch(url, {
@@ -32,7 +34,7 @@ export default async function handler(req, res) {
     res.status(response.status).send(text);
 
   } catch (err) {
-    console.error('Proxy error:', err);
+    console.error('Proxy error:', err.message);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(500).json({ error: err.message });
   }
