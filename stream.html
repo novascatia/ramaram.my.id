@@ -54,7 +54,12 @@
   .player-side { flex: 2; padding: 28px; overflow-y: auto; }
   .video-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
   #embedArea { width: 100%; height: 100%; }
-  #embedArea iframe { width: 100%; height: 100%; border: none; display: block; }
+  #embedArea iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
   
   .match-bar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
   @media (min-width: 768px) { .match-bar { flex-direction: row; justify-content: space-between; align-items: center; } }
@@ -451,8 +456,8 @@ function applyEmbed(src) {
   if (!url) return false;
   
   console.log('Loading embed:', url);
-  // HAPUS atribut sandbox sepenuhnya
-  ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>`;
+  // ONLY src attribute - nothing else
+  ea.innerHTML = `<iframe src="${url}"></iframe>`;
   return true;
 }
 
