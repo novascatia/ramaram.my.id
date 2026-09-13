@@ -3,7 +3,6 @@ export default async function handler(req, res) {
     const apiKey = process.env.sportsrc_api_key;
     
     if (!apiKey) {
-      console.error('API key not found');
       return res.status(500).json({ error: 'API key not configured' });
     }
     
@@ -11,18 +10,12 @@ export default async function handler(req, res) {
     const query = new URLSearchParams(params).toString();
     const url = `https://api.sportsrc.org/v2/?${query}`;
 
-    console.log('=== SportSRC Proxy ===');
-    console.log('Request URL:', url);
-    console.log('Params:', params);
-
     const response = await fetch(url, {
       headers: {
         'X-API-KEY': apiKey,
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15',
       }
     });
-
-    console.log('Response status:', response.status);
 
     const text = await response.text();
 
