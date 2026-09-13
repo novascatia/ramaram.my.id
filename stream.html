@@ -73,6 +73,9 @@
   .stream-btn { background: var(--bg-dark); border: 1px solid #333; color: var(--muted); padding: 7px 14px; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.8rem; transition: 0.2s; }
   .stream-btn:hover { border-color: #555; color: var(--text); }
   .stream-btn.active { border-color: var(--text); color: var(--text); }
+  .stream-fallback { display: none; margin-top: 10px; }
+  .stream-fallback a { display: inline-block; background: var(--bg-dark); border: 1px solid #333; color: var(--muted); padding: 7px 14px; border-radius: 4px; font-size: 0.8rem; text-decoration: none; transition: 0.2s; }
+  .stream-fallback a:hover { border-color: #555; color: var(--text); }
 
   .sidebar { flex: 1.2; border-top: 1px solid var(--border); display: flex; flex-direction: column; background: var(--bg-dark); max-height: 100vh; }
   @media (min-width: 900px) { .sidebar { border-top: none; border-left: 1px solid var(--border); } }
@@ -136,6 +139,7 @@
           <div class="match-bar-meta" id="matchBarMeta"></div>
         </div>
         <div class="stream-switcher" id="streamSwitcher" style="display:none;"></div>
+        <div class="stream-fallback" id="streamFallback"></div>
       </div>
     </div>
   </div>
@@ -405,6 +409,8 @@ async function loadStream(matchId, m) {
   ea.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div class="spinner"></div></div>';
   const sw = document.getElementById('streamSwitcher');
   sw.style.display = 'none'; sw.innerHTML = '';
+  const sf = document.getElementById('streamFallback');
+  sf.style.display = 'none'; sf.innerHTML = '';
 
   if (m.timestamp && m.status !== 'inprogress') {
     const diff = m.timestamp - Date.now();
@@ -457,6 +463,8 @@ function applyEmbed(src) {
   
   console.log('Loading embed:', url);
   ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" allowfullscreen allow="fullscreen"></iframe>`;
+  sf.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">Open stream in new tab</a>`;
+  sf.style.display = 'block';
   return true;
 }
 
