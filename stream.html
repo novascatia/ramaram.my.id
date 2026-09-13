@@ -456,7 +456,7 @@ function applyEmbed(src) {
   if (!url) return false;
   
   console.log('Loading embed:', url);
-  ea.innerHTML = `<iframe src="${url}" width="100%" height="100%"></iframe>`;
+  ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" allowfullscreen></iframe>`;
   return true;
 }
 
