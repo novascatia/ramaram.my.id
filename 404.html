@@ -1,1 +1,167 @@
-you lost bigboy?
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="project.png" />
+  <link rel="shortcut icon" type="image/png" href="project.png" />
+  
+  <title>404 - page not found</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d0d0d;
+      color: #999;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      min-height: 100vh;
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      padding: 22px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .navcontent {
+      width: 100%;
+      max-width: 580px;
+      padding: 0 24px;
+      display: flex;
+      gap: 20px;
+    }
+    nav a {
+      color: #777;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    nav a:hover {
+      color: #f1f1f1;
+    }
+    .navhidden {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    .container {
+      padding: 130px 24px 80px;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+    @media (min-width: 768px) {
+      .container {
+        padding: 150px 0 100px;
+      }
+      .navcontent {
+        padding: 0; 
+      }
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #666;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #f1f1f1;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+    .error-card {
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 28px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .error-card p {
+      color: #aaa;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+    .error-card p:last-child {
+      margin-bottom: 0;
+    }
+    a { color: #888; text-decoration: none; transition: color 0.2s ease; }
+    a:hover { color: #f1f1f1; }
+    
+    .back-link {
+      display: inline-block;
+      color: #f1f1f1;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .back-link:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="navbar">
+    <div class="navcontent">
+      <a href="/">[home]</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="hero-tag">404 Error</div>
+    <h1>page not found</h1>
+
+    <div class="error-card">
+      <p>The page you are looking for doesn't exist, has been removed, or is temporarily unavailable.</p>
+      <p style="margin-top: 20px;">
+        <a href="/" class="back-link">← back to home</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    let lastscroll = 0;
+    const navbar = document.getElementById("navbar");
+
+    window.addEventListener("scroll", () => {
+      let currentscroll = window.pageYOffset || document.documentElement.scrollTop;
+      
+      if (currentscroll > lastscroll && currentscroll > 50) {
+        navbar.classList.add("navhidden");
+      } else {
+        navbar.classList.remove("navhidden");
+      }
+      
+      lastscroll = currentscroll <= 0 ? 0 : currentscroll;
+    });
+  </script>
+</body>
+</html>
