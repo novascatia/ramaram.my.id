@@ -76,7 +76,6 @@
   .stream-fallback { display: none; margin-top: 10px; }
   .stream-fallback a { display: inline-block; background: var(--bg-dark); border: 1px solid #333; color: var(--muted); padding: 7px 14px; border-radius: 4px; font-size: 0.8rem; text-decoration: none; transition: 0.2s; }
   .stream-fallback a:hover { border-color: #555; color: var(--text); }
-  .stream-fallback span { display: inline-block; color: var(--muted); font-size: 0.8rem; line-height: 1.5; }
 
   .sidebar { flex: 1.2; border-top: 1px solid var(--border); display: flex; flex-direction: column; background: var(--bg-dark); max-height: 100vh; }
   @media (min-width: 900px) { .sidebar { border-top: none; border-left: 1px solid var(--border); } }
@@ -463,8 +462,8 @@ function applyEmbed(src) {
   if (!url) return false;
   
   console.log('Loading embed:', url);
-  ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" allowfullscreen allow="autoplay; fullscreen; picture-in-picture; encrypted-media" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"></iframe>`;
-  sf.innerHTML = `<span>Direct open is blocked by the stream provider. If this server fails, switch to another server above.</span>`;
+  ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" allowfullscreen allow="fullscreen"></iframe>`;
+  sf.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">Open stream in new tab</a>`;
   sf.style.display = 'block';
   return true;
 }
