@@ -463,7 +463,6 @@ function applyEmbed(src) {
   
   console.log('Loading embed:', url);
   ea.innerHTML = `<iframe src="${url}" width="100%" height="100%" allowfullscreen allow="fullscreen"></iframe>`;
-  sf.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">Open stream in new tab</a>`;
   sf.style.display = 'block';
   return true;
 }
