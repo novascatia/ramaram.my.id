@@ -136,6 +136,10 @@ body {
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
     background: rgba(15, 21, 33, 0.95);
 }
+.form-control::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
 .form-row-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -381,30 +385,30 @@ button:active {
             <div class="form-section-title">👤 Informasi Pemesan (Bill To)</div>
             <div class="form-group">
                 <label>Nama Customer</label>
-                <input type="text" id="inBName" class="form-control" value="Nama Customer">
+                <input type="text" id="inBName" class="form-control" placeholder="Masukkan nama customer">
             </div>
             <div class="form-group">
                 <label>Alamat Customer</label>
-                <input type="text" id="inBAddr1" class="form-control" value="Alamat Customer">
+                <input type="text" id="inBAddr1" class="form-control" placeholder="Masukkan alamat customer">
             </div>
             <div class="form-group">
                 <label>Kontak / No HP Customer</label>
-                <input type="text" id="inBAddr2" class="form-control" value="Contact Customer">
+                <input type="text" id="inBAddr2" class="form-control" placeholder="Contoh: 08123456789">
             </div>
 
             <div class="form-section-title">🚘 Detail Perjalanan & Meta</div>
             <div class="form-group">
                 <label>Nama Paket Perjalanan</label>
-                <input type="text" id="inSName" class="form-control" value="Nama paket">
+                <input type="text" id="inSName" class="form-control" placeholder="Contoh: Paket City Tour / Drop Bandara">
             </div>
             <div class="form-row-2">
                 <div class="form-group">
                     <label>Nama Driver</label>
-                    <input type="text" id="inSAddr1" class="form-control" value="Nama Driver">
+                    <input type="text" id="inSAddr1" class="form-control" placeholder="Nama Driver / Supir">
                 </div>
                 <div class="form-group">
                     <label>Jenis Mobil</label>
-                    <input type="text" id="inSAddr2" class="form-control" value="Jenis mobil">
+                    <input type="text" id="inSAddr2" class="form-control" placeholder="Contoh: Avanza / Hiace">
                 </div>
             </div>
 
@@ -422,11 +426,16 @@ button:active {
             <div class="form-row-2">
                 <div class="form-group">
                     <label>Tanggal Invoice</label>
-                    <input type="text" id="inDate" class="form-control">
+                    <input type="date" id="inDate" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label>Jatuh Tempo</label>
-                    <input type="text" id="inDueDate" class="form-control" value="10/07/2026">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <label>Jatuh Tempo</label>
+                        <label style="font-size:0.75rem; color:#38bdf8; cursor:pointer; display:flex; align-items:center; gap:0.25rem;">
+                            <input type="checkbox" id="chkDueDate" checked> Aktif
+                        </label>
+                    </div>
+                    <input type="date" id="inDueDate" class="form-control">
                 </div>
             </div>
 
@@ -499,7 +508,7 @@ button:active {
                             <span>P.O.#</span>
                             <span id="prevPONum" style="text-align: right;"></span>
                         </div>
-                        <div class="meta-row">
+                        <div class="meta-row" id="prevDueDateRow">
                             <span>DUE DATE</span>
                             <span id="prevDueDate" style="text-align: right;"></span>
                         </div>
@@ -538,7 +547,7 @@ button:active {
                     <div class="terms">
                         <div class="terms-title">TERMS & CONDITIONS</div>
                         <div>Pembayaran wajib dilunasi sesuai batas jatuh tempo.</div>
-                        <div>Jika ada masalah pembayaran hubungi 081 6237 495</div>
+                        <div>Jika ada masalah pembayaran hubungi 0816237495</div>
                     </div>
                 </div>
             </div>
@@ -628,7 +637,45 @@ window.addEventListener('DOMContentLoaded', async () => {
     tabHistoryBtn.addEventListener('click', () => switchTab('history'));
     document.getElementById('btnGoToPreview').addEventListener('click', () => switchTab('preview'));
 
-    // 3. FORM SYNC TO PREVIEW
+    // 3. DATE FORMATTER & HELPER
+    function formatDateToDisplay(dateStr) {
+        if (!dateStr) return '';
+        if (dateStr.includes('-')) {
+            const parts = dateStr.split('-');
+            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return dateStr;
+    }
+
+    function getTodayIsoDate() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    // 4. JATUH TEMPO TOGGLE
+    const chkDueDate = document.getElementById('chkDueDate');
+    const inDueDate = document.getElementById('inDueDate');
+    const prevDueDateRow = document.getElementById('prevDueDateRow');
+
+    function updateDueDateState() {
+        if (chkDueDate.checked) {
+            inDueDate.disabled = false;
+            inDueDate.style.opacity = '1';
+            prevDueDateRow.style.display = 'flex';
+        } else {
+            inDueDate.disabled = true;
+            inDueDate.style.opacity = '0.3';
+            prevDueDateRow.style.display = 'none';
+        }
+        syncAllInputs();
+    }
+
+    chkDueDate.addEventListener('change', updateDueDateState);
+
+    // 5. FORM SYNC TO PREVIEW
     const syncMap = [
         ['inCName', 'prevCName'],
         ['inCAddr1', 'prevCAddr1'],
@@ -640,9 +687,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         ['inSAddr1', 'prevSAddr1'],
         ['inSAddr2', 'prevSAddr2'],
         ['inInvNum', 'prevInvNum'],
-        ['inPONum', 'prevPONum'],
-        ['inDate', 'prevDate'],
-        ['inDueDate', 'prevDueDate']
+        ['inPONum', 'prevPONum']
     ];
 
     function syncAllInputs() {
@@ -653,6 +698,16 @@ window.addEventListener('DOMContentLoaded', async () => {
                 prevEl.innerText = inEl.value;
             }
         });
+
+        // Sync Tanggal Invoice & Jatuh Tempo Format
+        document.getElementById('prevDate').innerText = formatDateToDisplay(document.getElementById('inDate').value);
+
+        if (chkDueDate.checked) {
+            prevDueDateRow.style.display = 'flex';
+            document.getElementById('prevDueDate').innerText = formatDateToDisplay(inDueDate.value);
+        } else {
+            prevDueDateRow.style.display = 'none';
+        }
     }
 
     syncMap.forEach(([inputId]) => {
@@ -660,15 +715,10 @@ window.addEventListener('DOMContentLoaded', async () => {
         if (el) el.addEventListener('input', syncAllInputs);
     });
 
-    // 4. DATE & COUNTER (Starts 0, increment +1)
-    function getTodayFormattedDate() {
-        const today = new Date();
-        const dd = String(today.getDate()).padStart(2, '0');
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const yyyy = today.getFullYear();
-        return `${dd}/${mm}/${yyyy}`;
-    }
+    document.getElementById('inDate').addEventListener('change', syncAllInputs);
+    inDueDate.addEventListener('change', syncAllInputs);
 
+    // 6. COUNTER & INITIAL DATES
     async function getNextCounter() {
         if (window.useSupabase) {
             try {
@@ -691,11 +741,16 @@ window.addEventListener('DOMContentLoaded', async () => {
         const counter = await getNextCounter();
         document.getElementById('inInvNum').value = 'BRKH-INV-' + String(counter).padStart(4, '0');
         document.getElementById('inPONum').value = 'PO-' + String(counter).padStart(4, '0');
-        document.getElementById('inDate').value = getTodayFormattedDate();
+        
+        const todayIso = getTodayIsoDate();
+        document.getElementById('inDate').value = todayIso;
+        inDueDate.value = todayIso;
+        
+        updateDueDateState();
         syncAllInputs();
     }
 
-    // 5. MOBILE ITEM CARDS & TABLE
+    // 7. MOBILE ITEM CARDS & TABLE
     const formItemsContainer = document.getElementById('formItemsContainer');
     const paperTableBody = document.getElementById('paperTableBody');
 
@@ -768,7 +823,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('btnAddFormItem').addEventListener('click', () => addFormItem());
 
-    // 6. CANVAS SIGNATURE & LOGO UPLOAD
+    // 8. CANVAS SIGNATURE & LOGO UPLOAD
     const sigCanvas = document.getElementById('sigCanvas');
     const ctx = sigCanvas.getContext('2d');
     let drawing = false;
@@ -833,7 +888,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         ls.removeItem('invoice_travel_logo');
     });
 
-    // 7. SAVE TO HISTORY & AUTO INCREMENT +1
+    // 9. SAVE TO HISTORY & AUTO INCREMENT +1
     document.getElementById('btnSaveHistory').addEventListener('click', async () => {
         const btn = document.getElementById('btnSaveHistory');
         btn.disabled = true;
@@ -857,24 +912,27 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             const currentLogo = ls.getItem('invoice_travel_logo') || '/barokah.png';
 
+            const payloadMeta = {
+                c_name: document.getElementById('inCName').value,
+                c_addr1: document.getElementById('inCAddr1').value,
+                c_addr2: document.getElementById('inCAddr2').value,
+                b_name: document.getElementById('inBName').value,
+                b_addr1: document.getElementById('inBAddr1').value,
+                b_addr2: document.getElementById('inBAddr2').value,
+                s_name: document.getElementById('inSName').value,
+                s_addr1: document.getElementById('inSAddr1').value,
+                s_addr2: document.getElementById('inSAddr2').value,
+                has_due_date: chkDueDate.checked,
+                m_due: inDueDate.value,
+                m_po: document.getElementById('inPONum').value
+            };
+
             if (window.useSupabase) {
                 const { error } = await window.supabaseClient.from('invoices').insert([{
                     invoice_number: currentInvoiceNum,
                     invoice_name: invoiceName,
                     date: document.getElementById('inDate').value,
-                    meta: {
-                        c_name: document.getElementById('inCName').value,
-                        c_addr1: document.getElementById('inCAddr1').value,
-                        c_addr2: document.getElementById('inCAddr2').value,
-                        b_name: document.getElementById('inBName').value,
-                        b_addr1: document.getElementById('inBAddr1').value,
-                        b_addr2: document.getElementById('inBAddr2').value,
-                        s_name: document.getElementById('inSName').value,
-                        s_addr1: document.getElementById('inSAddr1').value,
-                        s_addr2: document.getElementById('inSAddr2').value,
-                        m_due: document.getElementById('inDueDate').value,
-                        m_po: document.getElementById('inPONum').value
-                    },
+                    meta: payloadMeta,
                     rows: rowsData,
                     grand_total: document.getElementById('valGrand').innerText,
                     sig: ls.getItem('invoice_travel_sig'),
@@ -887,19 +945,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 history.push({
                     id: Date.now(), invoice_number: currentInvoiceNum, invoice_name: invoiceName,
                     date: document.getElementById('inDate').value,
-                    meta: {
-                        c_name: document.getElementById('inCName').value,
-                        c_addr1: document.getElementById('inCAddr1').value,
-                        c_addr2: document.getElementById('inCAddr2').value,
-                        b_name: document.getElementById('inBName').value,
-                        b_addr1: document.getElementById('inBAddr1').value,
-                        b_addr2: document.getElementById('inBAddr2').value,
-                        s_name: document.getElementById('inSName').value,
-                        s_addr1: document.getElementById('inSAddr1').value,
-                        s_addr2: document.getElementById('inSAddr2').value,
-                        m_due: document.getElementById('inDueDate').value,
-                        m_po: document.getElementById('inPONum').value
-                    },
+                    meta: payloadMeta,
                     rows: rowsData, grand_total: document.getElementById('valGrand').innerText,
                     sig: ls.getItem('invoice_travel_sig'), logo: currentLogo
                 });
@@ -917,7 +963,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // 8. RENDER HISTORY
+    // 10. RENDER & LOAD HISTORY
     window.tempHistory = [];
     async function renderHistory(query = '') {
         const hList = document.getElementById('historyList');
@@ -954,7 +1000,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             div.innerHTML = `
                 <div class="history-info">
                     <div class="history-title">${item.invoice_number} - ${item.invoice_name}</div>
-                    <div class="history-meta">${item.date} | Total: ${item.grand_total}</div>
+                    <div class="history-meta">${formatDateToDisplay(item.date)} | Total: ${item.grand_total}</div>
                 </div>
                 <div style="display:flex; gap:0.4rem;">
                     <button type="button" class="btn-success" onclick="window.loadHistoryItem('${item.id}')">Buka</button>
@@ -972,7 +1018,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         if (!item) return;
 
         document.getElementById('inInvNum').value = item.invoice_number;
-        document.getElementById('inDate').value = item.date;
+        if (item.date) document.getElementById('inDate').value = item.date;
+
         if (item.meta) {
             document.getElementById('inCName').value = item.meta.c_name || '';
             document.getElementById('inCAddr1').value = item.meta.c_addr1 || '';
@@ -983,8 +1030,11 @@ window.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('inSName').value = item.meta.s_name || '';
             document.getElementById('inSAddr1').value = item.meta.s_addr1 || '';
             document.getElementById('inSAddr2').value = item.meta.s_addr2 || '';
-            document.getElementById('inDueDate').value = item.meta.m_due || '';
             document.getElementById('inPONum').value = item.meta.m_po || '';
+            
+            chkDueDate.checked = item.meta.has_due_date !== false;
+            if (item.meta.m_due) inDueDate.value = item.meta.m_due;
+            updateDueDateState();
         }
 
         formItemsContainer.innerHTML = '';
@@ -1015,7 +1065,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         renderHistory();
     };
 
-    // 9. EXPORT PDF & PNG
+    // 11. EXPORT PDF & PNG
     document.getElementById('btnPng').addEventListener('click', async () => {
         const canvas = await html2canvas(document.getElementById('invoicePaper'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
         const link = document.createElement('a');
@@ -1036,6 +1086,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('btnClear').addEventListener('click', async () => {
         if(confirm('Reset form?')) {
+            document.getElementById('inBName').value = '';
+            document.getElementById('inBAddr1').value = '';
+            document.getElementById('inBAddr2').value = '';
+            document.getElementById('inSName').value = '';
+            document.getElementById('inSAddr1').value = '';
+            document.getElementById('inSAddr2').value = '';
             formItemsContainer.innerHTML = '';
             addFormItem(); addFormItem(); addFormItem();
             await initCounters();
