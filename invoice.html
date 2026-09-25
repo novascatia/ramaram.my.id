@@ -1093,13 +1093,13 @@ window.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('inSAddr1').value = '';
             document.getElementById('inSAddr2').value = '';
             formItemsContainer.innerHTML = '';
-            addFormItem(); addFormItem(); addFormItem();
+            addFormItem();
             await initCounters();
         }
     });
 
     // INITIAL SETUP
-    addFormItem(); addFormItem(); addFormItem();
+    addFormItem();
     await initCounters();
     const savedSig = ls.getItem('invoice_travel_sig');
     if (savedSig) {
