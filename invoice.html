@@ -17,24 +17,185 @@ body {
     background: #0f172a;
     color: #f8fafc;
     min-height: 100vh;
-    padding: 2rem 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-.paper-container {
+
+/* Navigasi Header Tab */
+.top-nav {
+    background: rgba(30, 41, 59, 0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.nav-brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #38bdf8;
+}
+.nav-tabs {
+    display: flex;
+    gap: 0.75rem;
+}
+.nav-btn {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.nav-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
+}
+.nav-btn.active {
+    background: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+}
+
+/* Panel Containers */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    width: 100%;
+}
+.view-panel {
+    display: none;
+}
+.view-panel.active {
+    display: block;
+}
+
+/* Layout Grid Buat Invoice */
+.create-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+@media (min-width: 1024px) {
+    .create-grid {
+        grid-template-columns: 480px 1fr;
+    }
+}
+
+/* Form Panel Left */
+.form-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    height: fit-content;
+}
+.form-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #38bdf8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.4rem;
+    margin-top: 0.5rem;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #cbd5e1;
+}
+.form-control {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    color: #f8fafc;
+    font-size: 0.875rem;
+    outline: none;
+}
+.form-control:focus {
+    border-color: #38bdf8;
+}
+.form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+/* Form Table Rows */
+.input-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+.input-table th {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-align: left;
+    padding-bottom: 0.4rem;
+}
+.input-table td {
+    padding: 0.2rem 0.1rem;
+}
+.btn-del-row {
+    background: #f43f5e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Action Buttons */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+button {
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+    font-size: 0.85rem;
+}
+.btn-primary { background: #3b82f6; color: white; }
+.btn-primary:hover { background: #2563eb; }
+.btn-success { background: #10b981; color: white; }
+.btn-success:hover { background: #059669; }
+.btn-danger { background: #f43f5e; color: white; }
+.btn-danger:hover { background: #e11d48; }
+.btn-secondary { background: #64748b; color: white; }
+.btn-secondary:hover { background: #475569; }
+
+/* Right Preview Kertas A4 */
+.preview-container {
     width: 100%;
     overflow-x: auto;
     display: flex;
-    justify-content: flex-start;
-    padding-bottom: 1rem;
-}
-@media (min-width: 768px) {
-    .paper-container {
-        justify-content: center;
-    }
+    justify-content: center;
 }
 .paper {
     background: #ffffff;
@@ -49,19 +210,6 @@ body {
     font-size: 12px;
     display: flex;
     flex-direction: column;
-}
-.editable {
-    outline: none;
-    min-width: 20px;
-    display: inline-block;
-}
-.editable:empty::before {
-    content: attr(data-placeholder);
-    color: #94a3b8;
-    pointer-events: none;
-}
-.editable:focus {
-    background: rgba(56, 189, 248, 0.15);
 }
 .invoice-header {
     display: flex;
@@ -84,8 +232,6 @@ body {
     line-height: 1.5;
     color: #333;
 }
-
-/* Penyesuaian dimensi logo persegi panjang */
 .logo-area {
     width: 220px;
     height: 65px;
@@ -100,11 +246,7 @@ body {
     object-fit: contain;
     object-position: right top;
     display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
 }
-
 .invoice-meta {
     display: flex;
     justify-content: space-between;
@@ -151,23 +293,7 @@ body {
 .col-desc { width: 50%; text-align: left; }
 .col-price { width: 20%; text-align: right; }
 .col-amount { width: 20%; text-align: right; }
-.remove-row-btn {
-    position: absolute;
-    left: -25px;
-    background: #f43f5e;
-    color: white;
-    border: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 12px;
-    padding: 0;
-}
+
 .totals-area {
     display: flex;
     justify-content: flex-end;
@@ -199,7 +325,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
 }
 .sig-display img {
     max-width: 100%;
@@ -230,77 +355,17 @@ body {
     font-size: 11px;
     margin-bottom: 5px;
 }
-.controls {
+
+/* History Section */
+.history-card {
     background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 1.5rem;
-    width: 100%;
-    max-width: 900px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-.controls-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    justify-content: center;
-}
-.controls-uploader {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 1.25rem;
-}
-button {
-    background: #38bdf8;
-    color: #0f172a;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-    font-family: inherit;
-}
-button:hover {
-    background: #0ea5e9;
-}
-button:disabled {
-    background: #64748b;
-    cursor: not-allowed;
-}
-.btn-danger { background: #f43f5e; color: white; }
-.btn-danger:hover { background: #e11d48; }
-.btn-success { background: #10b981; color: white; }
-.btn-success:hover { background: #059669; }
-.btn-secondary { background: #64748b; color: white; }
-.btn-secondary:hover { background: #475569; }
-.btn-primary { background: #3b82f6; color: white; }
-.btn-primary:hover { background: #2563eb; }
-.history-section {
-    background: rgba(30, 41, 59, 0.7);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 1.5rem;
-    width: 100%;
-    max-width: 900px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     gap: 1rem;
-}
-.history-header {
-    font-size: 1.25rem;
-    font-weight: bold;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 0.5rem;
 }
 .search-box {
     width: 100%;
@@ -311,26 +376,21 @@ button:disabled {
     border-radius: 8px;
     outline: none;
 }
-.search-box:focus {
-    border-color: #38bdf8;
-}
 .history-list {
-    max-height: 250px;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 .history-item {
-    background: rgba(15, 23, 42, 0.4);
-    border: 1px solid rgba(255,255,255,0.05);
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 .history-info {
     display: flex;
@@ -340,282 +400,283 @@ button:disabled {
 .history-title {
     font-weight: 600;
     color: #38bdf8;
+    font-size: 1rem;
 }
 .history-meta {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #94a3b8;
 }
-.history-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-.btn-sm {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-    border-radius: 6px;
-}
+
+/* Modal Signature */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(4px);
     display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    padding: 1rem;
+    align-items: center; justify-content: center;
+    z-index: 2000; padding: 1rem;
 }
 .modal-content {
     background: #1e293b;
     border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
-    padding: 1.5rem;
-    width: 100%;
-    max-width: 450px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    border-radius: 16px; padding: 1.5rem;
+    width: 100%; max-width: 450px;
+    display: flex; flex-direction: column; gap: 1.25rem;
 }
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 0.75rem;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem;
 }
-.modal-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #f8fafc;
-}
-.modal-close {
-    background: none;
-    border: none;
-    color: #94a3b8;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-}
-.modal-close:hover {
-    color: #f8fafc;
-}
-.tabs {
-    display: flex;
-    gap: 0.5rem;
-    background: #0f172a;
-    padding: 0.25rem;
-    border-radius: 8px;
-}
-.tab-btn {
-    flex: 1;
-    background: transparent;
-    color: #94a3b8;
-    padding: 0.5rem;
-    font-size: 0.875rem;
-    border-radius: 6px;
-}
-.tab-btn.active {
-    background: #38bdf8;
-    color: #0f172a;
-}
-.tab-panel {
-    display: none;
-}
-.tab-panel.active {
-    display: block;
-}
-.canvas-container {
-    background: #ffffff;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 2px solid #cbd5e1;
-}
-#sigCanvas {
-    cursor: crosshair;
-    display: block;
-}
-.upload-box {
-    border: 2px dashed rgba(255,255,255,0.2);
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    cursor: pointer;
-    background: rgba(15, 23, 42, 0.4);
-}
-.upload-box:hover {
-    border-color: #38bdf8;
-}
-.modal-footer {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: flex-end;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding-top: 0.75rem;
-}
+.modal-title { font-size: 1.125rem; font-weight: 600; color: #f8fafc; }
+.modal-close { background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; }
+.canvas-container { background: #ffffff; border-radius: 8px; border: 2px solid #cbd5e1; }
+#sigCanvas { cursor: crosshair; display: block; }
+
 @media print {
-    body { background: none; padding: 0; }
-    .controls, .remove-row-btn, .modal-overlay, .history-section { display: none !important; }
+    body { background: none; }
+    .top-nav, .form-card, .modal-overlay, .history-card { display: none !important; }
     .paper { box-shadow: none; margin: 0; }
 }
 </style>
 </head>
 <body>
 
-<div class="paper-container">
-    <div class="paper" id="invoicePaper">
-        <div class="invoice-header">
-            <div class="invoice-title-area">
-                <div class="invoice-title">INVOICE</div>
-                <div class="company-details">
-                    <div class="editable" data-id="c_name" data-placeholder="Nama Travel" contenteditable="true" style="font-weight:bold; margin-bottom: 5px;">Barokah Travel</div><br>
-                    <div class="editable" data-id="c_addr1" data-placeholder="Alamat Kantor 1" contenteditable="true">Jl. Raya Keberangkatan No. 88</div><br>
-                    <div class="editable" data-id="c_addr2" data-placeholder="Alamat Kantor 2" contenteditable="true">Jakarta Pusat, Indonesia</div>
-                </div>
-            </div>
-            <div class="logo-area" id="logoContainer">
-                <img id="logoImg" class="logo-img" src="/barokah.png" alt="Barokah Auto Rent Logo">
-            </div>
-        </div>
-
-        <div class="invoice-meta">
-            <div class="meta-col">
-                <div class="meta-title">BILL TO</div>
-                <div class="editable" data-id="b_name" data-placeholder="Nama Pemesan" contenteditable="true">Ahmad Subari</div>
-                <div class="editable" data-id="b_addr1" data-placeholder="Alamat" contenteditable="true">Jl. Anggrek No. 12</div>
-                <div class="editable" data-id="b_addr2" data-placeholder="Kota / No. HP" contenteditable="true">Surabaya - 08123456789</div>
-            </div>
-            <div class="meta-col">
-                <div class="meta-title">TOUR DETAILS</div>
-                <div class="editable" data-id="s_name" data-placeholder="Paket Perjalanan" contenteditable="true">Paket Umroh Reguler</div>
-                <div class="editable" data-id="s_addr1" data-placeholder="Tanggal Keberangkatan" contenteditable="true">12 Oktober 2026</div>
-                <div class="editable" data-id="s_addr2" data-placeholder="Maskapai / Hotel" contenteditable="true">Saudi Airlines / Standard Hotel</div>
-            </div>
-            <div class="meta-col">
-                <div class="meta-row">
-                    <span>INVOICE #</span>
-                    <span class="editable" data-id="m_inv" id="invoiceNumberDisplay" contenteditable="false" style="text-align: right; min-width: 50px;">BRKH-INV-0001</span>
-                </div>
-                <div class="meta-row">
-                    <span>DATE</span>
-                    <span class="editable" data-id="m_date" data-placeholder="26/06/2026" contenteditable="true" style="text-align: right; min-width: 50px;">26/06/2026</span>
-                </div>
-                <div class="meta-row">
-                    <span>P.O.#</span>
-                    <span class="editable" data-id="m_po" data-placeholder="PO-8821" contenteditable="true" style="text-align: right; min-width: 50px;">PO-8821</span>
-                </div>
-                <div class="meta-row">
-                    <span>DUE DATE</span>
-                    <span class="editable" data-id="m_due" data-placeholder="10/07/2026" contenteditable="true" style="text-align: right; min-width: 50px;">10/07/2026</span>
-                </div>
-            </div>
-        </div>
-
-        <table class="invoice-table">
-            <thead>
-                <tr>
-                    <th class="col-qty">QTY</th>
-                    <th class="col-desc">DESCRIPTION</th>
-                    <th class="col-price">UNIT PRICE</th>
-                    <th class="col-amount">AMOUNT</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-            </tbody>
-        </table>
-
-        <div class="totals-area">
-            <div class="totals-grid">
-                <div>Subtotal</div>
-                <div id="valSubTotal">0</div>
-                
-                <div class="total-final">TOTAL</div>
-                <div class="total-final" id="valGrand">Rp 0</div>
-            </div>
-        </div>
-
-        <div class="signature-area">
-            <div class="sig-display">
-                <img id="finalSignature" alt="Signature">
-            </div>
-        </div>
-
-        <div class="invoice-footer">
-            <div class="thank-you">Thank you</div>
-            <div class="terms">
-                <div class="terms-title">TERMS & CONDITIONS</div>
-                <div class="editable" data-id="terms_1" data-placeholder="Syarat Ketentuan 1" contenteditable="true">Pembayaran wajib dilunasi sesuai batas jatuh tempo.</div>
-                <br>
-                <div class="editable" data-id="terms_2" data-placeholder="Syarat Ketentuan 2" contenteditable="true">Transfer ke rekening resmi Travel: Bank Mandiri 123-4567-890.</div>
-            </div>
-        </div>
+<nav class="top-nav">
+    <div class="nav-brand">Barokah Travel Invoice</div>
+    <div class="nav-tabs">
+        <button class="nav-btn active" id="tabCreateBtn">Buat Invoice</button>
+        <button class="nav-btn" id="tabHistoryBtn">Lihat History Invoice</button>
     </div>
+</nav>
+
+<div class="container">
+    <!-- VIEW 1: BUAT INVOICE -->
+    <main id="viewCreate" class="view-panel active">
+        <div class="create-grid">
+            
+            <!-- Left: Form Controls -->
+            <div class="form-card">
+                <div class="form-section-title">Detail Perusahaan & Customer</div>
+                <div class="form-group">
+                    <label>Nama Travel/Perusahaan</label>
+                    <input type="text" id="inCName" class="form-control" value="Barokah Auto Rent">
+                </div>
+                <div class="form-group">
+                    <label>Alamat Perusahaan 1</label>
+                    <input type="text" id="inCAddr1" class="form-control" value="Perumahan wahana pondok gede blok B2 no 28, Jatiranggon, Kec. Jatisampurna, Kota Bekasi, Jawa Barat">
+                </div>
+                <div class="form-group">
+                    <label>Kontak Perusahaan</label>
+                    <input type="text" id="inCAddr2" class="form-control" value="0816237495">
+                </div>
+
+                <div class="form-section-title">Informasi Customer (Bill To)</div>
+                <div class="form-group">
+                    <label>Nama Customer</label>
+                    <input type="text" id="inBName" class="form-control" value="Nama Customer">
+                </div>
+                <div class="form-group">
+                    <label>Alamat Customer</label>
+                    <input type="text" id="inBAddr1" class="form-control" value="Alamat Customer">
+                </div>
+                <div class="form-group">
+                    <label>Kontak Customer</label>
+                    <input type="text" id="inBAddr2" class="form-control" value="Contact Customer">
+                </div>
+
+                <div class="form-section-title">Detail Perjalanan & Meta</div>
+                <div class="form-group">
+                    <label>Nama Paket Perjalanan</label>
+                    <input type="text" id="inSName" class="form-control" value="Nama paket">
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Tanggal Pesenan</label>
+                        <input type="text" id="inSAddr1" class="form-control" value="Tanggal pesenan">
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis Mobil</label>
+                        <input type="text" id="inSAddr2" class="form-control" value="Jenis mobil">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Invoice #</label>
+                        <input type="text" id="inInvNum" class="form-control" readonly style="opacity: 0.8;">
+                    </div>
+                    <div class="form-group">
+                        <label>P.O. #</label>
+                        <input type="text" id="inPONum" class="form-control" readonly style="opacity: 0.8;">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Tanggal Invoice</label>
+                        <input type="text" id="inDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Jatuh Tempo (Due Date)</label>
+                        <input type="text" id="inDueDate" class="form-control" value="10/07/2026">
+                    </div>
+                </div>
+
+                <div class="form-section-title">Item Layanan</div>
+                <table class="input-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Qty</th>
+                            <th>Deskripsi</th>
+                            <th style="width: 30%;">Harga Satuan</th>
+                            <th style="width: 10%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="formTableBody">
+                    </tbody>
+                </table>
+                <button type="button" id="btnAddFormRow" class="btn-secondary" style="width: fit-content; margin-top: 0.4rem;">+ Tambah Item</button>
+
+                <div class="form-section-title">Logo & Tanda Tangan</div>
+                <div class="form-row-2">
+                    <button type="button" id="btnUploadLogo" class="btn-secondary">Ganti Logo Custom</button>
+                    <button type="button" id="btnRemoveLogo" class="btn-danger" style="display:none;">Reset Logo</button>
+                    <input type="file" id="logoUpload" accept="image/*" style="display: none;">
+                </div>
+                <button type="button" id="btnOpenSigModal" class="btn-secondary">Kelola Tanda Tangan</button>
+
+                <div class="button-group">
+                    <button type="button" id="btnSaveHistory" class="btn-primary" style="flex: 1;">Simpan ke Riwayat</button>
+                    <button type="button" id="btnPdf" class="btn-success">Save PDF</button>
+                    <button type="button" id="btnPng" class="btn-success">Save PNG</button>
+                    <button type="button" id="btnClear" class="btn-danger">Reset Form</button>
+                </div>
+            </div>
+
+            <!-- Right: Paper Preview -->
+            <div class="preview-container">
+                <div class="paper" id="invoicePaper">
+                    <div class="invoice-header">
+                        <div class="invoice-title-area">
+                            <div class="invoice-title">INVOICE</div>
+                            <div class="company-details">
+                                <div id="prevCName" style="font-weight:bold; margin-bottom: 5px;"></div><br>
+                                <div id="prevCAddr1"></div><br>
+                                <div id="prevCAddr2"></div>
+                            </div>
+                        </div>
+                        <div class="logo-area">
+                            <img id="logoImg" class="logo-img" src="/barokah.png" alt="Logo">
+                        </div>
+                    </div>
+
+                    <div class="invoice-meta">
+                        <div class="meta-col">
+                            <div class="meta-title">BILL TO</div>
+                            <div id="prevBName"></div>
+                            <div id="prevBAddr1"></div>
+                            <div id="prevBAddr2"></div>
+                        </div>
+                        <div class="meta-col">
+                            <div class="meta-title">TOUR DETAILS</div>
+                            <div id="prevSName"></div>
+                            <div id="prevSAddr1"></div>
+                            <div id="prevSAddr2"></div>
+                        </div>
+                        <div class="meta-col">
+                            <div class="meta-row">
+                                <span>INVOICE #</span>
+                                <span id="prevInvNum" style="text-align: right;"></span>
+                            </div>
+                            <div class="meta-row">
+                                <span>DATE</span>
+                                <span id="prevDate" style="text-align: right;"></span>
+                            </div>
+                            <div class="meta-row">
+                                <span>P.O.#</span>
+                                <span id="prevPONum" style="text-align: right;"></span>
+                            </div>
+                            <div class="meta-row">
+                                <span>DUE DATE</span>
+                                <span id="prevDueDate" style="text-align: right;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th class="col-qty">QTY</th>
+                                <th class="col-desc">DESCRIPTION</th>
+                                <th class="col-price">UNIT PRICE</th>
+                                <th class="col-amount">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paperTableBody">
+                        </tbody>
+                    </table>
+
+                    <div class="totals-area">
+                        <div class="totals-grid">
+                            <div>Subtotal</div>
+                            <div id="valSubTotal">0</div>
+                            <div class="total-final">TOTAL</div>
+                            <div class="total-final" id="valGrand">Rp 0</div>
+                        </div>
+                    </div>
+
+                    <div class="signature-area">
+                        <div class="sig-display">
+                            <img id="finalSignature" alt="Signature">
+                        </div>
+                    </div>
+
+                    <div class="invoice-footer">
+                        <div class="thank-you">Thank you</div>
+                        <div class="terms">
+                            <div class="terms-title">TERMS & CONDITIONS</div>
+                            <div>Pembayaran wajib dilunasi sesuai batas jatuh tempo.</div>
+                            <br>
+                            <div>Transfer ke rekening resmi Travel: Bank Mandiri 123-4567-890.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- VIEW 2: HISTORY -->
+    <main id="viewHistory" class="view-panel">
+        <div class="history-card">
+            <h2>Riwayat Invoice Tersimpan</h2>
+            <input type="text" id="historySearch" class="search-box" placeholder="Cari nomor invoice atau nama customer...">
+            <div class="history-list" id="historyList"></div>
+        </div>
+    </main>
 </div>
 
-<div class="controls data-html2canvas-ignore">
-    <div class="controls-buttons">
-        <button type="button" id="btnAddRow">+ Tambah Baris</button>
-        <button type="button" id="btnOpenSigModal" class="btn-secondary">Kelola Tanda Tangan</button>
-        <button type="button" id="btnSaveHistory" class="btn-primary">Simpan ke Riwayat</button>
-        <button type="button" class="btn-danger" id="btnClear">Reset Form</button>
-        <button type="button" class="btn-success" id="btnPng">Save PNG</button>
-        <button type="button" class="btn-success" id="btnPdf">Save PDF</button>
-    </div>
-    
-    <div class="controls-uploader">
-        <input type="file" id="logoUpload" accept="image/*" style="display: none;">
-        <button type="button" id="btnUploadLogo">Ganti Logo Custom</button>
-        <button type="button" id="btnRemoveLogo" class="btn-danger" style="display:none;">Reset Logo Default</button>
-    </div>
-</div>
-
-<div class="history-section data-html2canvas-ignore">
-    <div class="history-header">Riwayat Invoice</div>
-    <input type="text" id="historySearch" class="search-box" placeholder="Cari berdasarkan nomor atau nama invoice...">
-    <div class="history-list" id="historyList"></div>
-</div>
-
+<!-- Modal Signature -->
 <div class="modal-overlay" id="sigModal">
     <div class="modal-content">
         <div class="modal-header">
             <div class="modal-title">Pengaturan Tanda Tangan</div>
             <button type="button" class="modal-close" id="btnCloseModal">&times;</button>
         </div>
-        
-        <div class="tabs">
-            <button type="button" class="tab-btn active" id="tabDrawBtn">Gambar</button>
-            <button type="button" class="tab-btn" id="tabUploadBtn">Upload Foto</button>
+        <div class="canvas-container">
+            <canvas id="sigCanvas" width="400" height="200"></canvas>
         </div>
-        
-        <div class="tab-panel active" id="panelDraw">
-            <div class="canvas-container">
-                <canvas id="sigCanvas" width="400" height="200"></canvas>
-            </div>
-            <div style="margin-top: 0.5rem; text-align: right;">
-                <button type="button" id="btnClearSig" class="btn-danger" style="padding: 0.5rem 1rem; font-size: 12px;">Clear Canvas</button>
-            </div>
-        </div>
-        
-        <div class="tab-panel" id="panelUpload">
-            <input type="file" id="sigImageInput" accept="image/*" style="display: none;">
-            <div class="upload-box" id="sigUploadBox">
-                <span id="uploadBoxText">Klik untuk pilih foto tanda tangan</span>
-            </div>
-        </div>
-        
-        <div class="modal-footer">
-            <button type="button" class="btn-secondary" id="btnCancelModal" style="padding: 0.5rem 1rem;">Batal</button>
-            <button type="button" class="btn-success" id="btnApplySig" style="padding: 0.5rem 1rem;">Terapkan</button>
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+            <button type="button" id="btnClearSig" class="btn-danger">Clear</button>
+            <button type="button" id="btnApplySig" class="btn-success">Terapkan</button>
         </div>
     </div>
 </div>
 
 <script>
 window.addEventListener('DOMContentLoaded', async () => {
-    // 1. INIT SUPABASE
+    // 1. SUPABASE INIT
     const SUPABASE_URL = 'https://kmnpfquopcqsxklagqhu.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttbnBmcXVvcGNxc3hrbGFncWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MTc5MDcsImV4cCI6MjA3NTk5MzkwN30.c3twIk2ddUiLpjFdCT-PlMP2XcMsLJEtshfDcQR0Ric';
 
@@ -626,194 +687,205 @@ window.addEventListener('DOMContentLoaded', async () => {
         if (typeof supabase !== 'undefined') {
             window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             window.useSupabase = true;
-            console.log("Supabase terhubung.");
         }
-    } catch (e) {
-        console.warn("Supabase gagal terhubung, menggunakan mode offline (Local Storage).");
+    } catch (e) {}
+
+    const ls = window.localStorage;
+
+    // 2. TAB SWITCHING
+    const tabCreateBtn = document.getElementById('tabCreateBtn');
+    const tabHistoryBtn = document.getElementById('tabHistoryBtn');
+    const viewCreate = document.getElementById('viewCreate');
+    const viewHistory = document.getElementById('viewHistory');
+
+    tabCreateBtn.addEventListener('click', () => {
+        tabCreateBtn.classList.add('active');
+        tabHistoryBtn.classList.remove('active');
+        viewCreate.classList.add('active');
+        viewHistory.classList.remove('active');
+    });
+
+    tabHistoryBtn.addEventListener('click', () => {
+        tabHistoryBtn.classList.add('active');
+        tabCreateBtn.classList.remove('active');
+        viewHistory.classList.add('active');
+        viewCreate.classList.remove('active');
+        renderHistory();
+    });
+
+    // 3. FORM REALTIME SYNC TO PAPER
+    const syncMap = [
+        ['inCName', 'prevCName'],
+        ['inCAddr1', 'prevCAddr1'],
+        ['inCAddr2', 'prevCAddr2'],
+        ['inBName', 'prevBName'],
+        ['inBAddr1', 'prevBAddr1'],
+        ['inBAddr2', 'prevBAddr2'],
+        ['inSName', 'prevSName'],
+        ['inSAddr1', 'prevSAddr1'],
+        ['inSAddr2', 'prevSAddr2'],
+        ['inInvNum', 'prevInvNum'],
+        ['inPONum', 'prevPONum'],
+        ['inDate', 'prevDate'],
+        ['inDueDate', 'prevDueDate']
+    ];
+
+    function syncAllInputs() {
+        syncMap.forEach(([inputId, prevId]) => {
+            const inEl = document.getElementById(inputId);
+            const prevEl = document.getElementById(prevId);
+            if (inEl && prevEl) {
+                prevEl.innerText = inEl.value;
+            }
+        });
     }
 
-    // 2. VARIABEL & DOM ELEMENTS
-    const ls = window.localStorage;
-    const tableBody = document.getElementById('tableBody');
-    const sigCanvas = document.getElementById('sigCanvas');
-    const ctx = sigCanvas.getContext('2d');
-    let drawing = false;
+    syncMap.forEach(([inputId]) => {
+        const el = document.getElementById(inputId);
+        if (el) el.addEventListener('input', syncAllInputs);
+    });
 
-    const sigModal = document.getElementById('sigModal');
-    let activeTab = 'draw';
-    let tempSigData = null;
+    // 4. COUNTER & DATE LOGIC
+    function getTodayFormattedDate() {
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        return `${dd}/${mm}/${yyyy}`;
+    }
 
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
-
-    // 3. FUNGSI UTAMA
     async function getNextCounter() {
         if (window.useSupabase) {
             try {
-                const { data, error } = await window.supabaseClient
+                const { data } = await window.supabaseClient
                     .from('invoices')
                     .select('invoice_number')
                     .order('id', { ascending: false })
                     .limit(1);
-                
                 if (data && data.length > 0) {
                     const lastNum = data[0].invoice_number.split('-').pop();
                     return parseInt(lastNum, 10) + 1;
-                }
+                } else return 0;
             } catch(e) {}
         }
-        
         let counter = ls.getItem('invoice_counter');
-        return counter ? parseInt(counter, 10) : 1;
+        return counter !== null ? parseInt(counter, 10) : 0;
     }
 
-    function formatInvoiceNumber(counter) {
-        return 'BRKH-INV-' + String(counter).padStart(4, '0');
+    async function initCounters() {
+        const counter = await getNextCounter();
+        document.getElementById('inInvNum').value = 'BRKH-INV-' + String(counter).padStart(4, '0');
+        document.getElementById('inPONum').value = 'PO-' + String(counter).padStart(4, '0');
+        document.getElementById('inDate').value = getTodayFormattedDate();
+        syncAllInputs();
     }
 
-    async function updateInvoiceNumberView() {
-        try {
-            const currentCounter = await getNextCounter();
-            document.getElementById('invoiceNumberDisplay').innerText = formatInvoiceNumber(currentCounter);
-        } catch(e) {}
-    }
+    // 5. DYNAMIC DYNAMIC ITEMS TABLE
+    const formTableBody = document.getElementById('formTableBody');
+    const paperTableBody = document.getElementById('paperTableBody');
 
     function parseNumber(str) {
         if (!str) return 0;
-        return parseFloat(str.replace(/[^0-9,-]+/g, '')) || 0;
+        return parseFloat(str.toString().replace(/[^0-9,-]+/g, '')) || 0;
     }
 
     function formatNumber(num) {
-        return num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        return num.toLocaleString('id-ID', { minimumFractionDigits: 0 });
     }
 
-    function calculateRows() {
+    function calculateFormRows() {
+        paperTableBody.innerHTML = '';
         let subTotal = 0;
-        const rows = tableBody.querySelectorAll('tr');
+
+        const rows = formTableBody.querySelectorAll('tr');
         rows.forEach(row => {
-            const qty = parseNumber(row.querySelector('.td-qty').innerText);
-            const price = parseNumber(row.querySelector('.td-price').innerText);
+            const qty = parseNumber(row.querySelector('.item-qty').value);
+            const desc = row.querySelector('.item-desc').value;
+            const price = parseNumber(row.querySelector('.item-price').value);
             const amount = qty * price;
-            
-            if (amount > 0 || qty > 0 || price > 0) {
-                row.querySelector('.td-amount').innerText = formatNumber(amount);
-                subTotal += amount;
-            } else {
-                row.querySelector('.td-amount').innerText = '';
-            }
+
+            subTotal += amount;
+
+            // Render ke Kertas Preview
+            const paperTr = document.createElement('tr');
+            paperTr.innerHTML = `
+                <td class="col-qty">${qty || ''}</td>
+                <td class="col-desc">${desc || ''}</td>
+                <td class="col-price">${price ? formatNumber(price) : ''}</td>
+                <td class="col-amount">${amount ? formatNumber(amount) : ''}</td>
+            `;
+            paperTableBody.appendChild(paperTr);
         });
+
         document.getElementById('valSubTotal').innerText = formatNumber(subTotal);
         document.getElementById('valGrand').innerText = 'Rp ' + formatNumber(subTotal);
     }
 
-    function createRow(data = { qty: '', desc: '', price: '', amount: '' }) {
+    function addFormRow(data = { qty: '', desc: '', price: '' }) {
         const tr = document.createElement('tr');
-        tr.style.position = 'relative';
         tr.innerHTML = `
-            <td class="col-qty"><span class="editable td-qty" contenteditable="true" style="width:100%; text-align:center;">${data.qty}</span></td>
-            <td class="col-desc"><span class="editable td-desc" contenteditable="true" style="width:100%">${data.desc}</span></td>
-            <td class="col-price"><span class="editable td-price" contenteditable="true" style="width:100%; text-align:right;">${data.price}</span></td>
-            <td class="col-amount"><span class="editable td-amount" contenteditable="true" style="width:100%; text-align:right;">${data.amount}</span>
-            <button class="remove-row-btn data-html2canvas-ignore" contenteditable="false">X</button></td>
+            <td><input type="text" class="form-control item-qty" value="${data.qty}"></td>
+            <td><input type="text" class="form-control item-desc" value="${data.desc}"></td>
+            <td><input type="text" class="form-control item-price" value="${data.price}"></td>
+            <td><button type="button" class="btn-del-row">X</button></td>
         `;
-        
-        tr.querySelectorAll('.editable').forEach(el => {
-            el.addEventListener('input', calculateRows);
-        });
-        
-        tr.querySelector('.remove-row-btn').addEventListener('click', () => {
-            tr.remove();
-            calculateRows();
+
+        tr.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', calculateFormRows);
         });
 
-        tableBody.appendChild(tr);
-        calculateRows();
+        tr.querySelector('.btn-del-row').addEventListener('click', () => {
+            tr.remove();
+            calculateFormRows();
+        });
+
+        formTableBody.appendChild(tr);
+        calculateFormRows();
     }
 
-    // 4. MAPPING EVENT LISTENERS
-    document.getElementById('btnAddRow').addEventListener('click', () => createRow());
-    
-    // Canvas Logic
+    document.getElementById('btnAddFormRow').addEventListener('click', () => addFormRow());
+
+    // 6. CANVAS SIGNATURE & LOGO UPLOAD
+    const sigCanvas = document.getElementById('sigCanvas');
+    const ctx = sigCanvas.getContext('2d');
+    let drawing = false;
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+
     function getCanvasPos(evt) {
         const rect = sigCanvas.getBoundingClientRect();
-        const scaleX = sigCanvas.width / rect.width;
-        const scaleY = sigCanvas.height / rect.height;
-        const x = evt.clientX || (evt.touches && evt.touches[0].clientX);
-        const y = evt.clientY || (evt.touches && evt.touches[0].clientY);
-        return { x: (x - rect.left) * scaleX, y: (y - rect.top) * scaleY };
+        return {
+            x: (evt.clientX || evt.touches[0].clientX) - rect.left,
+            y: (evt.clientY || evt.touches[0].clientY) - rect.top
+        };
     }
 
-    sigCanvas.addEventListener('mousedown', (e) => { drawing = true; const p = getCanvasPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); });
-    sigCanvas.addEventListener('mousemove', (e) => { if(!drawing)return; const p = getCanvasPos(e); ctx.lineTo(p.x, p.y); ctx.strokeStyle = '#000000'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.stroke(); e.preventDefault(); });
+    sigCanvas.addEventListener('mousedown', (e) => { drawing = true; const p = getCanvasPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+    sigCanvas.addEventListener('mousemove', (e) => { if(!drawing)return; const p = getCanvasPos(e); ctx.lineTo(p.x, p.y); ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.stroke(); });
     sigCanvas.addEventListener('mouseup', () => drawing = false);
-    sigCanvas.addEventListener('mouseout', () => drawing = false);
-    
-    sigCanvas.addEventListener('touchstart', (e) => { drawing = true; const p = getCanvasPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); }, {passive: false});
-    sigCanvas.addEventListener('touchmove', (e) => { if(!drawing)return; const p = getCanvasPos(e); ctx.lineTo(p.x, p.y); ctx.strokeStyle = '#000000'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.stroke(); e.preventDefault(); }, {passive: false});
-    sigCanvas.addEventListener('touchend', () => drawing = false);
 
-    document.getElementById('btnClearSig').addEventListener('click', () => {
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
-    });
-
-    // Modal Tanda Tangan
-    document.getElementById('btnOpenSigModal').addEventListener('click', () => sigModal.style.display = 'flex');
-    document.getElementById('btnCloseModal').addEventListener('click', () => sigModal.style.display = 'none');
-    document.getElementById('btnCancelModal').addEventListener('click', () => sigModal.style.display = 'none');
-
-    document.getElementById('tabDrawBtn').addEventListener('click', function() {
-        activeTab = 'draw';
-        this.classList.add('active');
-        document.getElementById('tabUploadBtn').classList.remove('active');
-        document.getElementById('panelDraw').classList.add('active');
-        document.getElementById('panelUpload').classList.remove('active');
-    });
-
-    document.getElementById('tabUploadBtn').addEventListener('click', function() {
-        activeTab = 'upload';
-        this.classList.add('active');
-        document.getElementById('tabDrawBtn').classList.remove('active');
-        document.getElementById('panelUpload').classList.add('active');
-        document.getElementById('panelDraw').classList.remove('active');
-    });
-
-    document.getElementById('sigUploadBox').addEventListener('click', () => document.getElementById('sigImageInput').click());
-
-    document.getElementById('sigImageInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                tempSigData = ev.target.result;
-                document.getElementById('uploadBoxText').innerText = "Foto dipilih: " + file.name;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+    document.getElementById('btnOpenSigModal').addEventListener('click', () => document.getElementById('sigModal').style.display = 'flex');
+    document.getElementById('btnCloseModal').addEventListener('click', () => document.getElementById('sigModal').style.display = 'none');
+    document.getElementById('btnClearSig').addEventListener('click', () => { ctx.fillRect(0, 0, sigCanvas.width, sigCanvas.height); });
 
     document.getElementById('btnApplySig').addEventListener('click', () => {
-        let finalDataUrl = (activeTab === 'draw') ? sigCanvas.toDataURL('image/png') : tempSigData;
-        if (finalDataUrl) {
-            document.getElementById('finalSignature').src = finalDataUrl;
-            document.getElementById('finalSignature').style.display = 'block';
-            ls.setItem('invoice_travel_sig', finalDataUrl);
-        }
-        sigModal.style.display = 'none';
+        const sigUrl = sigCanvas.toDataURL('image/png');
+        document.getElementById('finalSignature').src = sigUrl;
+        document.getElementById('finalSignature').style.display = 'block';
+        ls.setItem('invoice_travel_sig', sigUrl);
+        document.getElementById('sigModal').style.display = 'none';
     });
 
-    // Logo Upload
     document.getElementById('btnUploadLogo').addEventListener('click', () => document.getElementById('logoUpload').click());
-    
     document.getElementById('logoUpload').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (ev) => {
-                const data = ev.target.result;
-                document.getElementById('logoImg').src = data;
+                document.getElementById('logoImg').src = ev.target.result;
                 document.getElementById('btnRemoveLogo').style.display = 'inline-block';
-                ls.setItem('invoice_travel_logo', data);
+                ls.setItem('invoice_travel_logo', ev.target.result);
             };
             reader.readAsDataURL(file);
         }
@@ -825,147 +897,25 @@ window.addEventListener('DOMContentLoaded', async () => {
         ls.removeItem('invoice_travel_logo');
     });
 
-    // 5. SISTEM RIWAYAT / SUPABASE
-    window.tempHistory = [];
-
-    window.loadHistoryItem = function(idStr) {
-        const item = window.tempHistory.find(x => String(x.id) === String(idStr));
-        if (!item) return;
-
-        document.getElementById('invoiceNumberDisplay').innerText = item.invoice_number;
-
-        document.querySelectorAll('.editable[data-id]').forEach(el => {
-            const attrId = el.getAttribute('data-id');
-            if (item.meta && item.meta[attrId] !== undefined) {
-                el.innerText = item.meta[attrId];
-            }
-        });
-
-        tableBody.innerHTML = '';
-        if (item.rows && item.rows.length > 0) {
-            item.rows.forEach(r => createRow(r));
-        } else {
-            for(let i=0; i<3; i++) createRow();
-        }
-
-        const finalImg = document.getElementById('finalSignature');
-        if (item.sig) {
-            finalImg.src = item.sig;
-            finalImg.style.display = 'block';
-        } else {
-            finalImg.src = '';
-            finalImg.style.display = 'none';
-        }
-
-        const logoImg = document.getElementById('logoImg');
-        const btnRemoveLogo = document.getElementById('btnRemoveLogo');
-        if (item.logo) {
-            logoImg.src = item.logo;
-            btnRemoveLogo.style.display = 'inline-block';
-        } else {
-            logoImg.src = '/barokah.png';
-            btnRemoveLogo.style.display = 'none';
-        }
-
-        calculateRows();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    window.deleteHistoryItem = async function(idStr) {
-        if (!confirm("Hapus item riwayat ini?")) return;
-        
-        try {
-            if (window.useSupabase) {
-                const { error } = await window.supabaseClient.from('invoices').delete().eq('id', idStr);
-                if (error) { alert("Gagal menghapus: " + error.message); return; }
-            } else {
-                let history = window.tempHistory.filter(x => String(x.id) !== String(idStr));
-                ls.setItem('invoice_travel_history', JSON.stringify(history));
-            }
-
-            await renderHistory(document.getElementById('historySearch').value);
-            if(document.getElementById('invoiceNumberDisplay').innerText !== 'BRKH-INV-0001') {
-                await updateInvoiceNumberView();
-            }
-        } catch(e) { console.error(e); }
-    };
-
-    async function renderHistory(query = '') {
-        const hList = document.getElementById('historyList');
-        hList.innerHTML = '<div style="text-align:center; padding:1rem; color:#94a3b8;">Memuat riwayat...</div>';
-        
-        try {
-            if (window.useSupabase) {
-                const { data: history, error } = await window.supabaseClient.from('invoices').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                window.tempHistory = history || [];
-            } else {
-                const raw = ls.getItem('invoice_travel_history');
-                window.tempHistory = raw ? JSON.parse(raw) : [];
-            }
-        } catch(e) {
-            console.error("Gagal get history:", e);
-            hList.innerHTML = '<div style="text-align:center; color:#ff6b6b; padding:1rem;">Gagal memuat riwayat. Mode offline aktif.</div>';
-            return;
-        }
-
-        const filtered = window.tempHistory.filter(item => {
-            const searchStr = ((item.invoice_number||'') + ' ' + (item.invoice_name||'')).toLowerCase();
-            return searchStr.includes(query.toLowerCase());
-        });
-
-        hList.innerHTML = '';
-        if (filtered.length === 0) {
-            hList.innerHTML = '<div style="text-align:center; color:#64748b; padding:1rem;">Tidak ada riwayat ditemukan</div>';
-            return;
-        }
-
-        const displayList = window.useSupabase ? filtered : filtered.slice().reverse();
-
-        displayList.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            div.innerHTML = `
-                <div class="history-info">
-                    <div class="history-title">${item.invoice_number} - ${item.invoice_name}</div>
-                    <div class="history-meta">${item.date} | Total: ${item.grand_total}</div>
-                </div>
-                <div class="history-actions">
-                    <button type="button" class="btn-success btn-sm" onclick="window.loadHistoryItem('${item.id}')">Buka</button>
-                    <button type="button" class="btn-danger btn-sm" onclick="window.deleteHistoryItem('${item.id}')">Hapus</button>
-                </div>
-            `;
-            hList.appendChild(div);
-        });
-    }
-
-    document.getElementById('historySearch').addEventListener('input', (e) => renderHistory(e.target.value));
-
+    // 7. SAVE TO HISTORY & INCREMENT
     document.getElementById('btnSaveHistory').addEventListener('click', async () => {
         const btn = document.getElementById('btnSaveHistory');
         btn.disabled = true;
-        btn.innerText = "Menyimpan...";
 
         try {
-            const name = prompt("Masukkan nama keterangan untuk invoice ini:");
+            const name = prompt("Masukkan nama keterangan/customer untuk invoice ini:");
             if (name === null) return;
-            
-            const invoiceName = name.trim() || "Tanpa Nama";
+
+            const invoiceName = name.trim() || document.getElementById('inBName').value || "Tanpa Nama";
             const currentCounter = await getNextCounter();
-            const currentInvoiceNum = formatInvoiceNumber(currentCounter);
-            
-            const metaData = {};
-            document.querySelectorAll('.editable[data-id]').forEach(el => {
-                if (el.id !== 'invoiceNumberDisplay') metaData[el.getAttribute('data-id')] = el.innerText;
-            });
+            const currentInvoiceNum = 'BRKH-INV-' + String(currentCounter).padStart(4, '0');
 
             const rowsData = [];
-            tableBody.querySelectorAll('tr').forEach(row => {
+            formTableBody.querySelectorAll('tr').forEach(r => {
                 rowsData.push({
-                    qty: row.querySelector('.td-qty').innerText,
-                    desc: row.querySelector('.td-desc').innerText,
-                    price: row.querySelector('.td-price').innerText,
-                    amount: row.querySelector('.td-amount').innerText
+                    qty: r.querySelector('.item-qty').value,
+                    desc: r.querySelector('.item-desc').value,
+                    price: r.querySelector('.item-price').value
                 });
             });
 
@@ -975,8 +925,20 @@ window.addEventListener('DOMContentLoaded', async () => {
                 const { error } = await window.supabaseClient.from('invoices').insert([{
                     invoice_number: currentInvoiceNum,
                     invoice_name: invoiceName,
-                    date: new Date().toLocaleDateString('id-ID'),
-                    meta: metaData,
+                    date: document.getElementById('inDate').value,
+                    meta: {
+                        c_name: document.getElementById('inCName').value,
+                        c_addr1: document.getElementById('inCAddr1').value,
+                        c_addr2: document.getElementById('inCAddr2').value,
+                        b_name: document.getElementById('inBName').value,
+                        b_addr1: document.getElementById('inBAddr1').value,
+                        b_addr2: document.getElementById('inBAddr2').value,
+                        s_name: document.getElementById('inSName').value,
+                        s_addr1: document.getElementById('inSAddr1').value,
+                        s_addr2: document.getElementById('inSAddr2').value,
+                        m_due: document.getElementById('inDueDate').value,
+                        m_po: document.getElementById('inPONum').value
+                    },
                     rows: rowsData,
                     grand_total: document.getElementById('valGrand').innerText,
                     sig: ls.getItem('invoice_travel_sig'),
@@ -988,114 +950,170 @@ window.addEventListener('DOMContentLoaded', async () => {
                 history = history ? JSON.parse(history) : [];
                 history.push({
                     id: Date.now(), invoice_number: currentInvoiceNum, invoice_name: invoiceName,
-                    date: new Date().toLocaleDateString('id-ID'), meta: metaData, rows: rowsData,
-                    grand_total: document.getElementById('valGrand').innerText,
+                    date: document.getElementById('inDate').value,
+                    meta: {
+                        c_name: document.getElementById('inCName').value,
+                        c_addr1: document.getElementById('inCAddr1').value,
+                        c_addr2: document.getElementById('inCAddr2').value,
+                        b_name: document.getElementById('inBName').value,
+                        b_addr1: document.getElementById('inBAddr1').value,
+                        b_addr2: document.getElementById('inBAddr2').value,
+                        s_name: document.getElementById('inSName').value,
+                        s_addr1: document.getElementById('inSAddr1').value,
+                        s_addr2: document.getElementById('inSAddr2').value,
+                        m_due: document.getElementById('inDueDate').value,
+                        m_po: document.getElementById('inPONum').value
+                    },
+                    rows: rowsData, grand_total: document.getElementById('valGrand').innerText,
                     sig: ls.getItem('invoice_travel_sig'), logo: currentLogo
                 });
                 ls.setItem('invoice_travel_history', JSON.stringify(history));
                 ls.setItem('invoice_counter', currentCounter + 1);
             }
-            
-            alert("Invoice " + currentInvoiceNum + " berhasil disimpan ke riwayat.");
-            
-            tableBody.innerHTML = '';
-            for(let i=0; i<3; i++) createRow();
-            await updateInvoiceNumberView();
-            await renderHistory();
+
+            alert("Invoice " + currentInvoiceNum + " berhasil disimpan.");
+            await initCounters();
 
         } catch(e) {
-            alert('Gagal menyimpan: ' + e.message);
+            alert("Gagal menyimpan: " + e.message);
         } finally {
             btn.disabled = false;
-            btn.innerText = "Simpan ke Riwayat";
         }
     });
 
-    // 6. SAVE & LOAD SEDERHANA
-    document.addEventListener('input', (e) => {
-        if (e.target.classList.contains('editable') && e.target.id !== 'invoiceNumberDisplay' && !e.target.closest('#tableBody')) {
-            const data = {};
-            document.querySelectorAll('.editable[data-id]').forEach(el => {
-                if (el.id !== 'invoiceNumberDisplay') data[el.getAttribute('data-id')] = el.innerText;
-            });
-            ls.setItem('invoiceTravelMeta', JSON.stringify(data));
-        }
-    });
+    // 8. RENDER & LOAD HISTORY
+    window.tempHistory = [];
+    async function renderHistory(query = '') {
+        const hList = document.getElementById('historyList');
+        hList.innerHTML = '<div style="color:#94a3b8;">Memuat riwayat...</div>';
 
-    document.getElementById('btnClear').addEventListener('click', async () => {
-        if(confirm('Reset form ini? Data riwayat tidak akan terhapus.')) {
-            tableBody.innerHTML = '';
-            for(let i=0; i<3; i++) createRow();
-            await updateInvoiceNumberView();
-            calculateRows();
-        }
-    });
-
-    document.getElementById('btnPng').addEventListener('click', async () => {
-        const paper = document.getElementById('invoicePaper');
-        const removeBtns = document.querySelectorAll('.remove-row-btn');
-        removeBtns.forEach(btn => btn.style.display = 'none');
         try {
-            const canvas = await html2canvas(paper, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
-            const link = document.createElement('a');
-            link.download = 'Invoice_Travel.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        } finally {
-            removeBtns.forEach(btn => btn.style.display = 'flex');
+            if (window.useSupabase) {
+                const { data, error } = await window.supabaseClient.from('invoices').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                window.tempHistory = data || [];
+            } else {
+                const raw = ls.getItem('invoice_travel_history');
+                window.tempHistory = raw ? JSON.parse(raw) : [];
+            }
+        } catch(e) {
+            hList.innerHTML = '<div style="color:#f43f5e;">Gagal memuat riwayat.</div>';
+            return;
         }
+
+        const filtered = window.tempHistory.filter(item => {
+            const str = ((item.invoice_number||'') + ' ' + (item.invoice_name||'')).toLowerCase();
+            return str.includes(query.toLowerCase());
+        });
+
+        hList.innerHTML = '';
+        if (filtered.length === 0) {
+            hList.innerHTML = '<div style="color:#64748b;">Tidak ada riwayat.</div>';
+            return;
+        }
+
+        filtered.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `
+                <div class="history-info">
+                    <div class="history-title">${item.invoice_number} - ${item.invoice_name}</div>
+                    <div class="history-meta">${item.date} | Total: ${item.grand_total}</div>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button type="button" class="btn-success" onclick="window.loadHistoryItem('${item.id}')">Buka</button>
+                    <button type="button" class="btn-danger" onclick="window.deleteHistoryItem('${item.id}')">Hapus</button>
+                </div>
+            `;
+            hList.appendChild(div);
+        });
+    }
+
+    document.getElementById('historySearch').addEventListener('input', (e) => renderHistory(e.target.value));
+
+    window.loadHistoryItem = function(idStr) {
+        const item = window.tempHistory.find(x => String(x.id) === String(idStr));
+        if (!item) return;
+
+        document.getElementById('inInvNum').value = item.invoice_number;
+        document.getElementById('inDate').value = item.date;
+        if (item.meta) {
+            document.getElementById('inCName').value = item.meta.c_name || '';
+            document.getElementById('inCAddr1').value = item.meta.c_addr1 || '';
+            document.getElementById('inCAddr2').value = item.meta.c_addr2 || '';
+            document.getElementById('inBName').value = item.meta.b_name || '';
+            document.getElementById('inBAddr1').value = item.meta.b_addr1 || '';
+            document.getElementById('inBAddr2').value = item.meta.b_addr2 || '';
+            document.getElementById('inSName').value = item.meta.s_name || '';
+            document.getElementById('inSAddr1').value = item.meta.s_addr1 || '';
+            document.getElementById('inSAddr2').value = item.meta.s_addr2 || '';
+            document.getElementById('inDueDate').value = item.meta.m_due || '';
+            document.getElementById('inPONum').value = item.meta.m_po || '';
+        }
+
+        formTableBody.innerHTML = '';
+        if (item.rows && item.rows.length > 0) {
+            item.rows.forEach(r => addFormRow(r));
+        }
+
+        if (item.sig) {
+            document.getElementById('finalSignature').src = item.sig;
+            document.getElementById('finalSignature').style.display = 'block';
+        }
+
+        if (item.logo) {
+            document.getElementById('logoImg').src = item.logo;
+        }
+
+        syncAllInputs();
+        tabCreateBtn.click();
+    };
+
+    window.deleteHistoryItem = async function(idStr) {
+        if (!confirm("Hapus item ini?")) return;
+        if (window.useSupabase) {
+            await window.supabaseClient.from('invoices').delete().eq('id', idStr);
+        } else {
+            let history = window.tempHistory.filter(x => String(x.id) !== String(idStr));
+            ls.setItem('invoice_travel_history', JSON.stringify(history));
+        }
+        renderHistory();
+    };
+
+    // 9. EXPORT PDF & PNG
+    document.getElementById('btnPng').addEventListener('click', async () => {
+        const canvas = await html2canvas(document.getElementById('invoicePaper'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+        const link = document.createElement('a');
+        link.download = `${document.getElementById('inInvNum').value}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
     });
 
     document.getElementById('btnPdf').addEventListener('click', async () => {
-        const paper = document.getElementById('invoicePaper');
-        const removeBtns = document.querySelectorAll('.remove-row-btn');
-        removeBtns.forEach(btn => btn.style.display = 'none');
-        try {
-            const canvas = await html2canvas(paper, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('Invoice_Travel.pdf');
-        } finally {
-            removeBtns.forEach(btn => btn.style.display = 'flex');
+        const canvas = await html2canvas(document.getElementById('invoicePaper'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`${document.getElementById('inInvNum').value}.pdf`);
+    });
+
+    document.getElementById('btnClear').addEventListener('click', async () => {
+        if(confirm('Reset form?')) {
+            formTableBody.innerHTML = '';
+            addFormRow(); addFormRow(); addFormRow();
+            await initCounters();
         }
     });
 
-    // 7. INITIAL LOAD
-    try {
-        const rawMeta = ls.getItem('invoiceTravelMeta');
-        if (rawMeta) {
-            const data = JSON.parse(rawMeta);
-            document.querySelectorAll('.editable[data-id]').forEach(el => {
-                const id = el.getAttribute('data-id');
-                if (data[id] !== undefined && el.id !== 'invoiceNumberDisplay') el.innerText = data[id];
-            });
-        }
-        for(let i=0; i<3; i++) createRow();
-
-        const savedSig = ls.getItem('invoice_travel_sig');
-        if (savedSig) {
-            document.getElementById('finalSignature').src = savedSig;
-            document.getElementById('finalSignature').style.display = 'block';
-            const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0); img.src = savedSig;
-        }
-
-        const savedLogo = ls.getItem('invoice_travel_logo');
-        if (savedLogo) {
-            document.getElementById('logoImg').src = savedLogo;
-            document.getElementById('btnRemoveLogo').style.display = 'inline-block';
-        } else {
-            document.getElementById('logoImg').src = '/barokah.png';
-            document.getElementById('btnRemoveLogo').style.display = 'none';
-        }
-
-        await updateInvoiceNumberView();
-        calculateRows();
-        await renderHistory();
-    } catch(e) {
-        console.error("Error on load:", e);
+    // INITIAL SETUP
+    addFormRow(); addFormRow(); addFormRow();
+    await initCounters();
+    const savedSig = ls.getItem('invoice_travel_sig');
+    if (savedSig) {
+        document.getElementById('finalSignature').src = savedSig;
+        document.getElementById('finalSignature').style.display = 'block';
     }
 });
 </script>
