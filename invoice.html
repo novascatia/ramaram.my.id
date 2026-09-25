@@ -66,6 +66,7 @@ body {
 .invoice-header {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 40px;
 }
 .invoice-title-area {
@@ -83,29 +84,27 @@ body {
     line-height: 1.5;
     color: #333;
 }
+
+/* Penyesuaian dimensi logo persegi panjang */
 .logo-area {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: #a1a1aa;
+    width: 220px;
+    height: 65px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-    overflow: hidden;
+    justify-content: flex-end;
     position: relative;
 }
 .logo-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    display: none;
+    object-fit: contain;
+    object-position: right top;
+    display: block;
     position: absolute;
     top: 0;
-    left: 0;
+    right: 0;
 }
+
 .invoice-meta {
     display: flex;
     justify-content: space-between;
@@ -478,8 +477,7 @@ button:disabled {
                 </div>
             </div>
             <div class="logo-area" id="logoContainer">
-                <span id="logoText">LOGO</span>
-                <img id="logoImg" class="logo-img" alt="Logo">
+                <img id="logoImg" class="logo-img" src="/barokah.png" alt="Barokah Auto Rent Logo">
             </div>
         </div>
 
@@ -569,8 +567,8 @@ button:disabled {
     
     <div class="controls-uploader">
         <input type="file" id="logoUpload" accept="image/*" style="display: none;">
-        <button type="button" id="btnUploadLogo">Upload Logo</button>
-        <button type="button" id="btnRemoveLogo" class="btn-danger" style="display:none;">Hapus Logo</button>
+        <button type="button" id="btnUploadLogo">Ganti Logo Custom</button>
+        <button type="button" id="btnRemoveLogo" class="btn-danger" style="display:none;">Reset Logo Default</button>
     </div>
 </div>
 
@@ -814,8 +812,6 @@ window.addEventListener('DOMContentLoaded', async () => {
             reader.onload = (ev) => {
                 const data = ev.target.result;
                 document.getElementById('logoImg').src = data;
-                document.getElementById('logoImg').style.display = 'block';
-                document.getElementById('logoText').style.display = 'none';
                 document.getElementById('btnRemoveLogo').style.display = 'inline-block';
                 ls.setItem('invoice_travel_logo', data);
             };
@@ -824,9 +820,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('btnRemoveLogo').addEventListener('click', () => {
-        document.getElementById('logoImg').src = '';
-        document.getElementById('logoImg').style.display = 'none';
-        document.getElementById('logoText').style.display = 'block';
+        document.getElementById('logoImg').src = '/barokah.png';
         document.getElementById('btnRemoveLogo').style.display = 'none';
         ls.removeItem('invoice_travel_logo');
     });
@@ -864,17 +858,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
 
         const logoImg = document.getElementById('logoImg');
-        const logoText = document.getElementById('logoText');
         const btnRemoveLogo = document.getElementById('btnRemoveLogo');
         if (item.logo) {
             logoImg.src = item.logo;
-            logoImg.style.display = 'block';
-            logoText.style.display = 'none';
             btnRemoveLogo.style.display = 'inline-block';
         } else {
-            logoImg.src = '';
-            logoImg.style.display = 'none';
-            logoText.style.display = 'block';
+            logoImg.src = '/barokah.png';
             btnRemoveLogo.style.display = 'none';
         }
 
@@ -980,6 +969,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                 });
             });
 
+            const currentLogo = ls.getItem('invoice_travel_logo') || '/barokah.png';
+
             if (window.useSupabase) {
                 const { error } = await window.supabaseClient.from('invoices').insert([{
                     invoice_number: currentInvoiceNum,
@@ -989,7 +980,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     rows: rowsData,
                     grand_total: document.getElementById('valGrand').innerText,
                     sig: ls.getItem('invoice_travel_sig'),
-                    logo: ls.getItem('invoice_travel_logo')
+                    logo: currentLogo
                 }]);
                 if (error) throw new Error(error.message);
             } else {
@@ -999,7 +990,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     id: Date.now(), invoice_number: currentInvoiceNum, invoice_name: invoiceName,
                     date: new Date().toLocaleDateString('id-ID'), meta: metaData, rows: rowsData,
                     grand_total: document.getElementById('valGrand').innerText,
-                    sig: ls.getItem('invoice_travel_sig'), logo: ls.getItem('invoice_travel_logo')
+                    sig: ls.getItem('invoice_travel_sig'), logo: currentLogo
                 });
                 ls.setItem('invoice_travel_history', JSON.stringify(history));
                 ls.setItem('invoice_counter', currentCounter + 1);
@@ -1094,9 +1085,10 @@ window.addEventListener('DOMContentLoaded', async () => {
         const savedLogo = ls.getItem('invoice_travel_logo');
         if (savedLogo) {
             document.getElementById('logoImg').src = savedLogo;
-            document.getElementById('logoImg').style.display = 'block';
-            document.getElementById('logoText').style.display = 'none';
             document.getElementById('btnRemoveLogo').style.display = 'inline-block';
+        } else {
+            document.getElementById('logoImg').src = '/barokah.png';
+            document.getElementById('btnRemoveLogo').style.display = 'none';
         }
 
         await updateInvoiceNumberView();
