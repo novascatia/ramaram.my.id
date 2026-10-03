@@ -1,10 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Free GPS Route Tracker</title>
+    <title>Mobile GPS Route Tracker</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -12,352 +11,458 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow: hidden; }
-        #map { width: 100vw; height: 100vh; z-index: 0; }
-        .overlay-panel { z-index: 10; max-height: 90vh; overflow-y: auto; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden;
+            background-color: #f3f4f6;
+            touch-action: none; /* Prevent pull-to-refresh on mobile */
+        }
+        #map { 
+            width: 100vw; 
+            height: 100vh; 
+            z-index: 0; 
+        }
         
-        /* Mobile responsive panel positioning */
-        @media (max-width: 768px) {
-            .tracker-panel { bottom: 1rem; top: auto; left: 1rem; right: 1rem; width: auto; max-height: 40vh; }
-            .history-panel { top: 1rem; left: 1rem; right: 1rem; width: auto; max-height: 40vh; }
+        /* Mobile Bottom Panel Styling */
+        .bottom-panel { 
+            z-index: 1000; 
+            box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.1);
+            max-height: 55vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-content {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS/Android */
+        }
+
+        .panel-content::-webkit-scrollbar { width: 4px; }
+        .panel-content::-webkit-scrollbar-track { background: transparent; }
+        .panel-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* Floating Center Button */
+        #btncenter {
+            position: absolute;
+            bottom: calc(55vh + 1rem); /* Adjust based on panel height */
+            right: 1rem;
+            z-index: 999;
+            transition: bottom 0.3s ease;
+        }
+        
+        @media (min-width: 768px) {
+            .bottom-panel { 
+                max-width: 400px; 
+                left: 1rem; 
+                bottom: 1rem; 
+                border-radius: 1.5rem; 
+                max-height: 80vh; 
+                position: absolute;
+            }
+            #btncenter {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        /* Pulsing Blue Dot for Current Location */
+        .user-loc-dot {
+            width: 16px;
+            height: 16px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+            position: relative;
+        }
+        .user-loc-dot::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.4);
+            animation: pulse 2s ease-out infinite;
+            z-index: -1;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
         }
     </style>
 </head>
-<body class="bg-gray-100 relative">
+<body class="relative h-screen w-screen flex flex-col justify-end md:justify-center">
 
-    <div id="map"></div>
+    <div id="map" class="absolute inset-0"></div>
 
-    <div class="tracker-panel overlay-panel absolute top-4 left-4 w-72 bg-white/95 backdrop-blur shadow-xl rounded-xl p-5 flex flex-col gap-4 border border-gray-100 transition-all">
-        <div>
-            <h1 class="text-xl font-bold text-gray-800 tracking-tight">Route Tracker</h1>
-            <div id="statusText" class="text-sm text-gray-500 font-medium">Ready to start</div>
+    <button id="btncenter" class="bg-white p-3 rounded-full shadow-lg border border-gray-100 text-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        📍
+    </button>
+
+    <div class="bottom-panel bg-white w-full rounded-t-[2rem] absolute bottom-0 left-0 transition-transform duration-300">
+        <!-- Drag Handle Indicator -->
+        <div class="w-full flex justify-center py-3 shrink-0 bg-white rounded-t-[2rem]">
+            <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
         </div>
         
-        <div class="grid grid-cols-2 gap-3">
-            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                <div class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Time</div>
-                <div id="timeVal" class="text-lg font-bold text-gray-800">00:00:00</div>
-            </div>
-            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                <div class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Distance</div>
-                <div id="distVal" class="text-lg font-bold text-gray-800">0.00 <span class="text-sm font-normal">km</span></div>
-            </div>
-            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 col-span-2 flex justify-between items-end">
+        <div class="panel-content px-5 pb-6 flex-1 bg-white">
+            <div class="flex justify-between items-end mb-4">
                 <div>
-                    <div class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Avg Speed</div>
-                    <div id="speedVal" class="text-2xl font-bold text-blue-600">0.0 <span class="text-sm font-normal text-gray-500">km/h</span></div>
+                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Route Tracker</h1>
+                    <div id="statustext" class="text-sm font-medium text-gray-500 mt-1">Locating GPS...</div>
                 </div>
-                <div id="currentSpeedVal" class="text-sm font-medium text-gray-400 mb-1">0.0 km/h (now)</div>
             </div>
-        </div>
+            
+            <!-- Live Stats Grid -->
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex flex-col justify-center">
+                    <div class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Time</div>
+                    <div id="timeval" class="text-xl font-black text-gray-800 tabular-nums">00:00:00</div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex flex-col justify-center">
+                    <div class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Distance</div>
+                    <div class="flex items-baseline gap-1">
+                        <div id="distval" class="text-xl font-black text-gray-800 tabular-nums">0.00</div>
+                        <div class="text-sm font-semibold text-gray-500">km</div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 col-span-2 flex justify-between items-center">
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Estimated Speed</div>
+                        <div class="flex items-baseline gap-1">
+                            <div id="avgspeedval" class="text-3xl font-black text-blue-600 tabular-nums">0.0</div>
+                            <div class="text-sm font-semibold text-blue-600/70">km/h</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Current</div>
+                        <div id="curspeedval" class="text-lg font-bold text-gray-700 tabular-nums">0.0 <span class="text-xs font-normal">km/h</span></div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="flex flex-col gap-2 mt-2">
-            <button id="btnStart" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2.5 px-4 rounded-lg shadow-sm shadow-green-500/30 transition-colors">Start Tracking</button>
-            <button id="btnStop" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 px-4 rounded-lg shadow-sm shadow-red-500/30 transition-colors hidden">Stop & Save</button>
-            <button id="btnClear" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 px-4 rounded-lg transition-colors border border-gray-200">Clear Map History</button>
-        </div>
-    </div>
+            <div class="flex flex-col gap-3 mb-6">
+                <button id="btnstart" class="w-full bg-blue-600 active:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-blue-600/30 transition-transform active:scale-[0.98]">
+                    Start Tracking
+                </button>
+                <button id="btnstop" class="w-full bg-red-500 active:bg-red-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-red-500/30 transition-transform active:scale-[0.98] hidden">
+                    Stop & Save Route
+                </button>
+            </div>
 
-    <div class="history-panel overlay-panel absolute top-4 right-4 w-80 bg-white/95 backdrop-blur shadow-xl rounded-xl p-5 border border-gray-100">
-        <div class="flex justify-between items-center mb-3">
-            <h2 class="text-lg font-bold text-gray-800 tracking-tight">Saved Sessions</h2>
-            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold">Local Storage</span>
-        </div>
-        <p class="text-xs text-gray-500 mb-3">Click a route to view and compare it on the map.</p>
-        <div id="sessionList" class="flex flex-col gap-2 custom-scrollbar pr-1 max-h-[50vh] md:max-h-[70vh]">
-            <!-- History items will be injected here -->
+            <!-- History Section -->
+            <div class="border-t border-gray-100 pt-5 mt-2">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-gray-900 tracking-tight">Saved Routes</h2>
+                    <button id="btnclear" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg active:bg-red-100">Clear Map</button>
+                </div>
+                <div id="sessionlist" class="flex flex-col gap-3">
+                    <!-- History list populated by JS -->
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         let map;
-        let activePolyline;
-        let routeCoords = [];
-        let savedPolylines = [];
-        
-        let watchId = null;
-        let isTracking = false;
-        let startTime = null;
-        let totalDistance = 0;
-        let lastPos = null;
-        let timerInterval = null;
+        let activepolyline;
+        let routecoords = [];
+        let savedpolylines = [];
+        let globalwatchid = null;
+        let istracking = false;
+        let starttime = null;
+        let totaldistance = 0;
+        let lastpos = null;
+        let timerinterval = null;
+        let currentmarker = null;
+        let userlat = 0;
+        let userlng = 0;
+        let hascenteredonce = false;
 
         const ui = {
-            time: document.getElementById('timeVal'),
-            dist: document.getElementById('distVal'),
-            avgSpeed: document.getElementById('speedVal'),
-            curSpeed: document.getElementById('currentSpeedVal'),
-            status: document.getElementById('statusText'),
-            start: document.getElementById('btnStart'),
-            stop: document.getElementById('btnStop'),
-            clear: document.getElementById('btnClear'),
-            list: document.getElementById('sessionList')
+            time: document.getElementById('timeval'),
+            dist: document.getElementById('distval'),
+            avgspeed: document.getElementById('avgspeedval'),
+            curspeed: document.getElementById('curspeedval'),
+            status: document.getElementById('statustext'),
+            btnstart: document.getElementById('btnstart'),
+            btnstop: document.getElementById('btnstop'),
+            btnclear: document.getElementById('btnclear'),
+            btncenter: document.getElementById('btncenter'),
+            list: document.getElementById('sessionlist')
         };
 
-        function initMap() {
-            // Default center before geolocation kicks in
-            map = L.map('map').setView([-6.2088, 106.8456], 13);
+        function initmap() {
+            map = L.map('map', { 
+                zoomControl: false,
+                attributionControl: false 
+            }).setView([-6.2088, 106.8456], 14);
             
-            // Using standard Free OpenStreetMap tiles. No API key needed.
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
 
-            // Polyline for the current active tracking session
-            activePolyline = L.polyline([], {
-                color: '#ef4444', 
+            activepolyline = L.polyline([], {
+                color: '#2563eb', 
                 weight: 6, 
                 opacity: 0.9, 
-                lineJoin: 'round'
+                lineJoin: 'round',
+                lineCap: 'round'
             }).addTo(map);
 
-            // Try to locate user immediately to center the map
-            map.locate({setView: true, maxZoom: 16});
+            const doticon = L.divIcon({
+                className: 'custom-div-icon',
+                html: "<div class='user-loc-dot'></div>",
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            });
+            
+            currentmarker = L.marker([-6.2088, 106.8456], { icon: doticon, zIndexOffset: 1000 }).addTo(map);
+            currentmarker.setOpacity(0);
         }
 
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const earthRadiusKm = 6371;
+        function calculatedistance(lat1, lon1, lat2, lon2) {
+            const earthradiuskm = 6371;
             const p = Math.PI / 180;
             const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2 + 
                       Math.cos(lat1 * p) * Math.cos(lat2 * p) * 
                       (1 - Math.cos((lon2 - lon1) * p)) / 2;
-            return 2 * earthRadiusKm * Math.asin(Math.sqrt(a));
+            return 2 * earthradiuskm * Math.asin(Math.sqrt(a));
         }
 
-        function formatDuration(ms) {
-            let totalSeconds = Math.floor(ms / 1000);
-            let h = Math.floor(totalSeconds / 3600);
-            let m = Math.floor((totalSeconds % 3600) / 60);
-            let s = totalSeconds % 60;
+        function formatduration(ms) {
+            let totalseconds = Math.floor(ms / 1000);
+            let h = Math.floor(totalseconds / 3600);
+            let m = Math.floor((totalseconds % 3600) / 60);
+            let s = totalseconds % 60;
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
-        function updateTimerUI() {
-            if (!isTracking || !startTime) return;
+        function updatetimerui() {
+            if (!istracking || !starttime) return;
             const now = Date.now();
-            const elapsedMs = now - startTime;
-            ui.time.innerText = formatDuration(elapsedMs);
+            const elapsedms = now - starttime;
+            ui.time.innerText = formatduration(elapsedms);
             
-            // Update Average speed dynamically
-            const elapsedHours = elapsedMs / (1000 * 60 * 60);
-            if (elapsedHours > 0 && totalDistance > 0) {
-                const avg = totalDistance / elapsedHours;
-                ui.avgSpeed.innerHTML = `${avg.toFixed(1)} <span class="text-sm font-normal text-gray-500">km/h</span>`;
+            const elapsedhours = elapsedms / (1000 * 60 * 60);
+            if (elapsedhours > 0 && totaldistance > 0) {
+                const avg = totaldistance / elapsedhours;
+                ui.avgspeed.innerText = avg.toFixed(1);
             }
         }
 
-        function onPositionUpdate(position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
+        function onpositionupdate(position) {
+            userlat = position.coords.latitude;
+            userlng = position.coords.longitude;
             const now = Date.now();
             
-            // If it's the first point, jump map to it
-            if (routeCoords.length === 0) {
-                map.setView([lat, lng], 17);
-            } else {
-                // Keep panning map to follow user smoothly
-                map.panTo([lat, lng]);
-            }
-            
-            routeCoords.push([lat, lng]);
-            activePolyline.setLatLngs(routeCoords);
+            currentmarker.setLatLng([userlat, userlng]);
+            currentmarker.setOpacity(1);
 
-            if (lastPos) {
-                const distDelta = calculateDistance(lastPos.lat, lastPos.lng, lat, lng);
-                totalDistance += distDelta;
-                
-                // Calculate current instantaneous speed between the last two points
-                const timeDeltaHours = (now - lastPos.time) / (1000 * 60 * 60);
-                if (timeDeltaHours > 0) {
-                    const currentSpd = distDelta / timeDeltaHours;
-                    ui.curSpeed.innerText = `${currentSpd.toFixed(1)} km/h (now)`;
+            if (!hascenteredonce) {
+                map.setView([userlat, userlng], 16);
+                hascenteredonce = true;
+                if (!istracking) {
+                    ui.status.innerText = "GPS Ready. Tap Start Tracking.";
+                    ui.status.className = "text-sm font-medium text-blue-500 mt-1";
                 }
             }
 
-            lastPos = { lat, lng, time: now };
-            ui.dist.innerHTML = `${totalDistance.toFixed(2)} <span class="text-sm font-normal">km</span>`;
-        }
+            if (istracking) {
+                map.panTo([userlat, userlng]);
+                
+                routecoords.push([userlat, userlng]);
+                activepolyline.setLatLngs(routecoords);
 
-        function onPositionError(err) {
-            console.warn("Geolocation error:", err);
-            ui.status.innerText = "GPS Error. Check permissions.";
-            ui.status.classList.add("text-red-500");
-        }
+                if (lastpos) {
+                    const distdelta = calculatedistance(lastpos.lat, lastpos.lng, userlat, userlng);
+                    totaldistance += distdelta;
+                    
+                    const timedeltahours = (now - lastpos.time) / (1000 * 60 * 60);
+                    if (timedeltahours > 0) {
+                        const currentspd = distdelta / timedeltahours;
+                        ui.curspeed.innerHTML = `${currentspd.toFixed(1)} <span class="text-xs font-normal">km/h</span>`;
+                    }
+                }
 
-        function startTracking() {
-            if (!navigator.geolocation) {
-                alert("Geolocation is not supported by your browser.");
-                return;
+                lastpos = { lat: userlat, lng: userlng, time: now };
+                ui.dist.innerText = totaldistance.toFixed(2);
             }
+        }
+
+        function onpositionerror(err) {
+            ui.status.innerText = "GPS Error. Check location permissions.";
+            ui.status.className = "text-sm font-medium text-red-500 mt-1";
+        }
+
+        function starttracking() {
+            istracking = true;
+            starttime = Date.now();
+            routecoords = [];
+            totaldistance = 0;
+            lastpos = null;
             
-            isTracking = true;
-            startTime = Date.now();
-            routeCoords = [];
-            totalDistance = 0;
-            lastPos = null;
-            
-            activePolyline.setLatLngs([]);
-            ui.avgSpeed.innerHTML = `0.0 <span class="text-sm font-normal text-gray-500">km/h</span>`;
-            ui.curSpeed.innerText = `0.0 km/h (now)`;
+            activepolyline.setLatLngs([]);
+            ui.avgspeed.innerText = "0.0";
+            ui.curspeed.innerHTML = `0.0 <span class="text-xs font-normal">km/h</span>`;
+            ui.dist.innerText = "0.00";
             
             ui.status.innerText = "Tracking active...";
-            ui.status.classList.remove("text-red-500", "text-gray-500");
-            ui.status.classList.add("text-green-500");
+            ui.status.className = "text-sm font-medium text-green-500 mt-1";
             
-            ui.start.classList.add("hidden");
-            ui.stop.classList.remove("hidden");
+            ui.btnstart.classList.add("hidden");
+            ui.btnstop.classList.remove("hidden");
             
-            timerInterval = setInterval(updateTimerUI, 1000);
-            
-            watchId = navigator.geolocation.watchPosition(
-                onPositionUpdate, 
-                onPositionError, 
-                { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
-            );
+            timerinterval = setInterval(updatetimerui, 1000);
+
+            if (userlat !== 0 && userlng !== 0) {
+                routecoords.push([userlat, userlng]);
+                lastpos = { lat: userlat, lng: userlng, time: starttime };
+                map.setView([userlat, userlng], 17);
+            }
         }
 
-        function stopTracking() {
-            if (!isTracking) return;
+        function stoptracking() {
+            istracking = false;
+            const endtime = Date.now();
             
-            isTracking = false;
-            const endTime = Date.now();
-            
-            if (watchId !== null) {
-                navigator.geolocation.clearWatch(watchId);
-                watchId = null;
-            }
-            
-            clearInterval(timerInterval);
-            timerInterval = null;
+            clearInterval(timerinterval);
+            timerinterval = null;
             
             ui.status.innerText = "Session stopped and saved.";
-            ui.status.classList.remove("text-green-500");
-            ui.status.classList.add("text-gray-500");
+            ui.status.className = "text-sm font-medium text-gray-500 mt-1";
             
-            ui.stop.classList.add("hidden");
-            ui.start.classList.remove("hidden");
-            ui.curSpeed.innerText = `Stopped`;
+            ui.btnstop.classList.add("hidden");
+            ui.btnstart.classList.remove("hidden");
+            ui.curspeed.innerHTML = `0.0 <span class="text-xs font-normal">km/h</span>`;
 
-            // Save session to Local Storage if there's actual data
-            if (routeCoords.length > 1) {
-                saveSession(startTime, endTime, totalDistance, routeCoords);
+            if (routecoords.length > 1) {
+                savesession(starttime, endtime, totaldistance, routecoords);
             }
         }
 
-        function saveSession(start, end, distance, coords) {
-            let sessions = JSON.parse(localStorage.getItem('gpsTrackerRoutes') || '[]');
+        function savesession(start, end, distance, coords) {
+            let sessions = JSON.parse(localStorage.getItem('gpstrackerroutes') || '[]');
             
-            const newSession = {
-                id: start.toString(), // use timestamp as unique ID
-                startTime: start,
-                endTime: end,
+            const newsession = {
+                id: start.toString(),
+                starttime: start,
+                endtime: end,
                 distance: distance,
                 coords: coords
             };
             
-            sessions.push(newSession);
-            localStorage.setItem('gpsTrackerRoutes', JSON.stringify(sessions));
-            loadHistory();
+            sessions.push(newsession);
+            localStorage.setItem('gpstrackerroutes', JSON.stringify(sessions));
+            loadhistory();
         }
 
-        function loadHistory() {
-            const sessions = JSON.parse(localStorage.getItem('gpsTrackerRoutes') || '[]');
+        function loadhistory() {
+            const sessions = JSON.parse(localStorage.getItem('gpstrackerroutes') || '[]');
             ui.list.innerHTML = "";
             
             if (sessions.length === 0) {
-                ui.list.innerHTML = `<div class="text-sm text-gray-500 p-3 text-center bg-gray-50 rounded border border-dashed border-gray-300">No saved routes yet.</div>`;
+                ui.list.innerHTML = `<div class="text-sm text-gray-400 p-4 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">No saved routes yet.</div>`;
                 return;
             }
             
-            // Sort newest first
-            sessions.sort((a, b) => b.startTime - a.startTime);
+            sessions.sort((a, b) => b.starttime - a.starttime);
             
             sessions.forEach(session => {
-                const startD = new Date(session.startTime);
-                const dateStr = startD.toLocaleDateString() + " " + startD.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                const durationStr = formatDuration(session.endTime - session.startTime);
-                const distStr = (session.distance || 0).toFixed(2);
+                const startd = new Date(session.starttime);
+                const datestr = startd.toLocaleDateString() + " " + startd.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const durationstr = formatduration(session.endtime - session.starttime);
+                const diststr = (session.distance || 0).toFixed(2);
                 
-                // Calculate average speed for history display
-                const hours = (session.endTime - session.startTime) / (1000 * 60 * 60);
-                const avgSpeedStr = hours > 0 ? (session.distance / hours).toFixed(1) : "0.0";
+                const hours = (session.endtime - session.starttime) / (1000 * 60 * 60);
+                const avgspeedstr = hours > 0 ? (session.distance / hours).toFixed(1) : "0.0";
                 
-                const itemHtml = `
-                    <div class="history-item p-3 bg-gray-50 hover:bg-blue-50 border border-gray-100 rounded-lg cursor-pointer transition-colors group" data-id="${session.id}">
-                        <div class="font-semibold text-sm text-gray-800 group-hover:text-blue-700">${dateStr}</div>
-                        <div class="grid grid-cols-3 gap-1 mt-2 text-xs text-gray-600">
-                            <div><span class="font-medium text-gray-400 block">Dist</span>${distStr} km</div>
-                            <div><span class="font-medium text-gray-400 block">Time</span>${durationStr}</div>
-                            <div><span class="font-medium text-gray-400 block">Speed</span>${avgSpeedStr} km/h</div>
+                const itemhtml = `
+                    <div class="p-4 bg-gray-50 active:bg-blue-50 border border-gray-100 rounded-2xl cursor-pointer transition-colors" data-id="${session.id}" onclick="drawhistoryroute('${session.id}')">
+                        <div class="font-bold text-sm text-gray-800 mb-2">${datestr}</div>
+                        <div class="grid grid-cols-3 gap-2 text-xs text-gray-700">
+                            <div class="bg-white p-2 rounded-lg border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5">Dist</span>${diststr} km</div>
+                            <div class="bg-white p-2 rounded-lg border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5">Time</span>${durationstr}</div>
+                            <div class="bg-white p-2 rounded-lg border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5">Speed</span>${avgspeedstr}</div>
                         </div>
                     </div>
                 `;
-                ui.list.insertAdjacentHTML('beforeend', itemHtml);
-            });
-
-            // Attach click listeners to draw the route
-            document.querySelectorAll('.history-item').forEach(el => {
-                el.addEventListener('click', (e) => {
-                    const sessionId = e.currentTarget.getAttribute('data-id');
-                    drawHistoryRoute(sessionId, sessions);
-                });
+                ui.list.insertAdjacentHTML('beforeend', itemhtml);
             });
         }
 
-        function drawHistoryRoute(sessionId, sessions) {
-            const session = sessions.find(s => s.id === sessionId);
+        window.drawhistoryroute = function(sessionid) {
+            const sessions = JSON.parse(localStorage.getItem('gpstrackerroutes') || '[]');
+            const session = sessions.find(s => s.id === sessionid);
             if (!session || !session.coords || session.coords.length === 0) return;
 
-            // Generate a random color for comparison purposes, favoring cool colors
-            const colors = ['#3b82f6', '#8b5cf6', '#0ea5e9', '#14b8a6', '#f59e0b', '#ec4899'];
-            const color = colors[savedPolylines.length % colors.length];
+            const colors = ['#8b5cf6', '#0ea5e9', '#14b8a6', '#f59e0b', '#ec4899'];
+            const color = colors[savedpolylines.length % colors.length];
 
-            const newLine = L.polyline(session.coords, {
+            const newline = L.polyline(session.coords, {
                 color: color, 
                 weight: 5, 
                 opacity: 0.8, 
-                dashArray: '8, 8' 
+                dashArray: '10, 10',
+                lineJoin: 'round',
+                lineCap: 'round'
             }).addTo(map);
             
-            // Add a start and end marker
-            const startMarker = L.circleMarker(session.coords[0], { radius: 5, color: '#22c55e', fillOpacity: 1 }).addTo(map);
-            const endMarker = L.circleMarker(session.coords[session.coords.length - 1], { radius: 5, color: '#ef4444', fillOpacity: 1 }).addTo(map);
+            const startmarker = L.circleMarker(session.coords[0], { radius: 6, color: '#fff', fillColor: '#22c55e', fillOpacity: 1, weight: 2 }).addTo(map);
+            const endmarker = L.circleMarker(session.coords[session.coords.length - 1], { radius: 6, color: '#fff', fillColor: '#ef4444', fillOpacity: 1, weight: 2 }).addTo(map);
 
-            savedPolylines.push({ line: newLine, start: startMarker, end: endMarker });
-            
-            // Fit map to show the whole history route
-            map.fitBounds(newLine.getBounds(), { padding: [50, 50] });
-        }
+            savedpolylines.push({ line: newline, start: startmarker, end: endmarker });
+            map.fitBounds(newline.getBounds(), { padding: [50, 50] });
+        };
 
-        function clearMapHistory() {
-            savedPolylines.forEach(item => {
+        function clearmaphistory() {
+            savedpolylines.forEach(item => {
                 map.removeLayer(item.line);
                 map.removeLayer(item.start);
                 map.removeLayer(item.end);
             });
-            savedPolylines = [];
-            // Recenter to current active tracking line if it exists
-            if (routeCoords.length > 0) {
-                map.fitBounds(activePolyline.getBounds());
+            savedpolylines = [];
+            
+            if (routecoords.length > 0) {
+                map.fitBounds(activepolyline.getBounds(), { padding: [50, 50] });
+            } else if (userlat !== 0) {
+                map.setView([userlat, userlng], 16);
+            }
+        }
+
+        function centeronuser() {
+            if (userlat !== 0 && userlng !== 0) {
+                map.setView([userlat, userlng], 17);
             } else {
-                map.locate({setView: true, maxZoom: 16});
+                ui.status.innerText = "Location not found yet.";
+                ui.status.className = "text-sm font-medium text-orange-500 mt-1";
             }
         }
 
         window.onload = () => {
-            initMap();
-            loadHistory();
+            initmap();
+            loadhistory();
             
-            ui.start.addEventListener('click', startTracking);
-            ui.stop.addEventListener('click', stopTracking);
-            ui.clear.addEventListener('click', clearMapHistory);
+            if (navigator.geolocation) {
+                globalwatchid = navigator.geolocation.watchPosition(
+                    onpositionupdate, 
+                    onpositionerror, 
+                    { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
+                );
+            } else {
+                ui.status.innerText = "Geolocation not supported.";
+                ui.status.className = "text-sm font-medium text-red-500 mt-1";
+            }
+            
+            ui.btnstart.addEventListener('click', starttracking);
+            ui.btnstop.addEventListener('click', stoptracking);
+            ui.btnclear.addEventListener('click', clearmaphistory);
+            ui.btncenter.addEventListener('click', centeronuser);
         };
     </script>
 </body>
 </html>
-```
