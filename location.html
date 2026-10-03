@@ -19,13 +19,16 @@
             background-color: #f3f4f6;
             touch-action: none;
         }
-        #map { 
+        #mapdiv { 
             width: 100vw; 
             height: 100vh; 
             z-index: 0; 
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         
-        #bottom-sheet {
+        #bottomsheet {
             height: 85vh;
             width: 100%;
             position: absolute;
@@ -42,7 +45,7 @@
         }
         
         @media (min-width: 768px) {
-            #bottom-sheet {
+            #bottomsheet {
                 width: 400px;
                 left: 50%;
                 margin-left: -200px;
@@ -50,29 +53,28 @@
             }
         }
 
-        #drag-handle {
-            /* Increase touch target area for dragging */
+        #draghandle {
             touch-action: none; 
             cursor: grab;
             flex-shrink: 0;
         }
         
-        #drag-handle:active {
+        #draghandle:active {
             cursor: grabbing;
         }
 
-        #sheet-content {
+        #sheetcontent {
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             padding-bottom: 2rem;
             flex-grow: 1;
         }
 
-        #sheet-content::-webkit-scrollbar { width: 4px; }
-        #sheet-content::-webkit-scrollbar-track { background: transparent; }
-        #sheet-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        #sheetcontent::-webkit-scrollbar { width: 4px; }
+        #sheetcontent::-webkit-scrollbar-track { background: transparent; }
+        #sheetcontent::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
-        .user-dot {
+        .userdot {
             width: 18px;
             height: 18px;
             background-color: #2563eb;
@@ -82,7 +84,7 @@
             position: relative;
         }
         
-        .user-dot-pulse {
+        .userdotpulse {
             position: absolute;
             top: -6px;
             left: -6px;
@@ -93,14 +95,21 @@
             animation: pulse 2s ease-out infinite;
             z-index: -1;
         }
+
+        .userdotpaused {
+            background-color: #f59e0b;
+        }
+        
+        .userdotpulsepaused {
+            background-color: rgba(245, 158, 11, 0.4);
+        }
         
         @keyframes pulse {
             0% { transform: scale(0.5); opacity: 1; }
             100% { transform: scale(2.5); opacity: 0; }
         }
         
-        /* Modern generic toast */
-        #toast-msg {
+        #toastmsg {
             position: absolute;
             top: 20px;
             left: 50%;
@@ -113,18 +122,16 @@
 </head>
 <body>
 
-    <div id="map"></div>
+    <div id="mapdiv"></div>
     
-    <div id="toast-msg" class="bg-gray-800 text-white px-4 py-2 rounded-full text-sm font-medium opacity-0 shadow-lg"></div>
+    <div id="toastmsg" class="bg-gray-800 text-white px-4 py-2 rounded-full text-sm font-medium opacity-0 shadow-lg"></div>
 
-    <div id="bottom-sheet">
-        <!-- Drag Handle Area -->
-        <div id="drag-handle" class="w-full pt-4 pb-4 flex justify-center items-center bg-white rounded-t-[1.5rem]">
+    <div id="bottomsheet">
+        <div id="draghandle" class="w-full pt-4 pb-4 flex justify-center items-center bg-white rounded-t-[1.5rem]">
             <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
         </div>
         
-        <!-- Scrollable Content inside Bottom Sheet -->
-        <div id="sheet-content" class="px-5">
+        <div id="sheetcontent" class="px-5">
             <div class="flex justify-between items-end mb-4">
                 <div>
                     <h1 class="text-2xl font-black text-gray-900 tracking-tight">Route Tracker</h1>
@@ -159,14 +166,20 @@
                 </div>
             </div>
 
-            <div class="flex gap-3 mb-6">
-                <button id="btnstart" class="flex-1 bg-blue-600 active:bg-blue-700 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition-transform active:scale-[0.97]">
-                    Start Tracking
+            <div class="flex gap-2 mb-6">
+                <button id="btnstart" class="flex-1 bg-blue-600 active:bg-blue-700 text-white font-bold text-lg py-3 rounded-xl shadow-lg shadow-blue-600/30 transition-transform active:scale-[0.97]">
+                    Start
                 </button>
-                <button id="btnstop" class="flex-1 bg-orange-500 active:bg-orange-600 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-orange-500/30 transition-transform active:scale-[0.97] hidden">
-                    Stop Session
+                <button id="btnpause" class="flex-1 bg-orange-500 active:bg-orange-600 text-white font-bold text-lg py-3 rounded-xl shadow-lg shadow-orange-500/30 transition-transform active:scale-[0.97] hidden">
+                    Pause
                 </button>
-                <button id="btnsave" class="flex-1 bg-green-500 active:bg-green-600 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-green-500/30 transition-transform active:scale-[0.97] hidden">
+                <button id="btnresume" class="flex-1 bg-green-500 active:bg-green-600 text-white font-bold text-lg py-3 rounded-xl shadow-lg shadow-green-500/30 transition-transform active:scale-[0.97] hidden">
+                    Resume
+                </button>
+                <button id="btnstop" class="flex-1 bg-red-500 active:bg-red-600 text-white font-bold text-lg py-3 rounded-xl shadow-lg shadow-red-500/30 transition-transform active:scale-[0.97] hidden">
+                    Stop
+                </button>
+                <button id="btnsave" class="flex-1 bg-green-600 active:bg-green-700 text-white font-bold text-lg py-3 rounded-xl shadow-lg shadow-green-600/30 transition-transform active:scale-[0.97] hidden">
                     Save Route
                 </button>
             </div>
@@ -183,461 +196,528 @@
     </div>
 
     <script>
-        let map;
-        let userMarker;
-        let trackPolyline;
-        let routeCoordinates = [];
-        let savedRouteLayers = [];
-        let watchId = null;
+        let themap;
+        let usermarker;
+        let trackpolyline;
         
-        // Tracking State
-        let isTracking = false;
-        let startTimeMs = null;
-        let endTimeMs = null;
-        let totalDistance = 0;
-        let lastLocation = null;
-        let timerInterval = null;
-        let currentLat = 0;
-        let currentLng = 0;
-
-        // UI Elements
-        const elTime = document.getElementById('eltime');
-        const elDist = document.getElementById('eldist');
-        const elAvgSpeed = document.getElementById('elavgspeed');
-        const elCurSpeed = document.getElementById('elcurspeed');
-        const elStatus = document.getElementById('elstatus');
-        const btnStart = document.getElementById('btnstart');
-        const btnStop = document.getElementById('btnstop');
-        const btnSave = document.getElementById('btnsave');
-        const btnClear = document.getElementById('btnclear');
-        const listHistory = document.getElementById('listhistory');
-        const bottomSheet = document.getElementById('bottom-sheet');
-        const dragHandle = document.getElementById('drag-handle');
-        const toastMsg = document.getElementById('toast-msg');
-
-        // Bottom Sheet Drag State
-        let windowHeight = window.innerHeight;
-        let sheetHeight = windowHeight * 0.85; 
+        let watchid = null;
+        let wakelockobj = null;
         
-        // Snap states (represented as translateY values)
-        // translateY(0) = expanded (85vh)
-        // translateY(35vh) = half (50vh)
-        // translateY(70vh) = collapsed (15vh)
-        let expandedY = 0;
-        let halfY = windowHeight * 0.35;
-        let collapsedY = windowHeight * 0.70;
+        let istracking = false;
+        let ispaused = false;
         
-        let currentTranslateY = collapsedY; // Start collapsed
-        let startTouchY = 0;
-        let startTranslateY = 0;
+        let starttimems = null;
+        let lastupdatetimems = null;
+        let elapsedtimems = 0;
+        
+        let totalkm = 0;
+        let lastloc = null;
+        let timerinterval = null;
+        
+        let curlat = 0;
+        let curlng = 0;
+        
+        let routecoords = [[]]; 
+        let cursegment = 0;
+        let savedrouteslayers = [];
 
-        // Initialize Map
-        function initializeMap() {
-            map = L.map('map', { 
+        const eltime = document.getElementById('eltime');
+        const eldist = document.getElementById('eldist');
+        const elavgspeed = document.getElementById('elavgspeed');
+        const elcurspeed = document.getElementById('elcurspeed');
+        const elstatus = document.getElementById('elstatus');
+        
+        const btnstart = document.getElementById('btnstart');
+        const btnpause = document.getElementById('btnpause');
+        const btnresume = document.getElementById('btnresume');
+        const btnstop = document.getElementById('btnstop');
+        const btnsave = document.getElementById('btnsave');
+        const btnclear = document.getElementById('btnclear');
+        
+        const listhistory = document.getElementById('listhistory');
+        const bottomsheet = document.getElementById('bottomsheet');
+        const draghandle = document.getElementById('draghandle');
+        const toastmsg = document.getElementById('toastmsg');
+
+        let winheight = window.innerHeight;
+        let sheetheight = winheight * 0.85; 
+        
+        let expandedy = 0;
+        let halfy = winheight * 0.35;
+        let collapsedy = winheight * 0.70;
+        
+        let curtranslatey = collapsedy;
+        let starttouchy = 0;
+        let starttranslatey = 0;
+
+        function initmap() {
+            themap = L.map('mapdiv', { 
                 zoomControl: false,
                 attributionControl: false 
             }).setView([0, 0], 16);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19
-            }).addTo(map);
+            }).addTo(themap);
 
-            trackPolyline = L.polyline([], {
+            trackpolyline = L.polyline([], {
                 color: '#2563eb', 
                 weight: 6, 
                 opacity: 0.9, 
                 lineJoin: 'round',
                 lineCap: 'round'
-            }).addTo(map);
+            }).addTo(themap);
 
-            const iconHtml = `
-                <div class='user-dot'>
-                    <div class='user-dot-pulse'></div>
+            const iconhtml = `
+                <div class='userdot' id='userdotinner'>
+                    <div class='userdotpulse' id='userdotpulseinner'></div>
                 </div>
             `;
             
-            const customIcon = L.divIcon({
+            const customicon = L.divIcon({
                 className: 'custom-icon',
-                html: iconHtml,
+                html: iconhtml,
                 iconSize: [18, 18],
                 iconAnchor: [9, 9]
             });
             
-            userMarker = L.marker([0, 0], { 
-                icon: customIcon, 
+            usermarker = L.marker([0, 0], { 
+                icon: customicon, 
                 zIndexOffset: 1000 
-            }).addTo(map);
+            }).addTo(themap);
             
-            userMarker.setOpacity(0);
-            
-            // Set initial sheet position
-            bottomSheet.style.transform = `translateY(${currentTranslateY}px)`;
+            usermarker.setOpacity(0);
+            bottomsheet.style.transform = `translateY(${curtranslatey}px)`;
         }
 
-        function setupBottomSheet() {
-            // Recalculate heights on resize
+        function setupsheet() {
             window.addEventListener('resize', () => {
-                windowHeight = window.innerHeight;
-                sheetHeight = windowHeight * 0.85;
-                expandedY = 0;
-                halfY = windowHeight * 0.35;
-                collapsedY = windowHeight * 0.70;
-                
-                // Snap to nearest state
-                snapToClosest(currentTranslateY);
+                winheight = window.innerHeight;
+                sheetheight = winheight * 0.85;
+                expandedy = 0;
+                halfy = winheight * 0.35;
+                collapsedy = winheight * 0.70;
+                snapclosest(curtranslatey);
             });
 
-            dragHandle.addEventListener('touchstart', (e) => {
-                startTouchY = e.touches[0].clientY;
-                startTranslateY = currentTranslateY;
-                bottomSheet.style.transition = 'none'; // Remove transition for 1:1 drag
+            draghandle.addEventListener('touchstart', (e) => {
+                starttouchy = e.touches[0].clientY;
+                starttranslatey = curtranslatey;
+                bottomsheet.style.transition = 'none';
             }, { passive: true });
 
-            dragHandle.addEventListener('touchmove', (e) => {
-                const deltaY = e.touches[0].clientY - startTouchY;
-                let newTranslateY = startTranslateY + deltaY;
+            draghandle.addEventListener('touchmove', (e) => {
+                const deltay = e.touches[0].clientY - starttouchy;
+                let newy = starttranslatey + deltay;
                 
-                // Clamp limits (cannot drag higher than expanded, or lower than collapsed)
-                if (newTranslateY < expandedY) newTranslateY = expandedY;
-                if (newTranslateY > collapsedY) newTranslateY = collapsedY;
+                if (newy < expandedy) newy = expandedy;
+                if (newy > collapsedy) newy = collapsedy;
                 
-                currentTranslateY = newTranslateY;
-                bottomSheet.style.transform = `translateY(${currentTranslateY}px)`;
+                curtranslatey = newy;
+                bottomsheet.style.transform = `translateY(${curtranslatey}px)`;
                 
-                // Recenter map dynamically while dragging
-                if (currentLat !== 0 && currentLng !== 0) {
-                    centerMapOnUser();
+                if (curlat !== 0 && curlng !== 0) {
+                    centermap();
                 }
             }, { passive: true });
 
-            dragHandle.addEventListener('touchend', () => {
-                bottomSheet.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                snapToClosest(currentTranslateY);
+            draghandle.addEventListener('touchend', () => {
+                bottomsheet.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                snapclosest(curtranslatey);
             });
         }
 
-        function snapToClosest(y) {
-            const distToExpanded = Math.abs(y - expandedY);
-            const distToHalf = Math.abs(y - halfY);
-            const distToCollapsed = Math.abs(y - collapsedY);
+        function snapclosest(ypos) {
+            const distexpanded = Math.abs(ypos - expandedy);
+            const disthalf = Math.abs(ypos - halfy);
+            const distcollapsed = Math.abs(ypos - collapsedy);
+            const mindist = Math.min(distexpanded, disthalf, distcollapsed);
 
-            const min = Math.min(distToExpanded, distToHalf, distToCollapsed);
-
-            if (min === distToExpanded) {
-                currentTranslateY = expandedY;
-            } else if (min === distToHalf) {
-                currentTranslateY = halfY;
+            if (mindist === distexpanded) {
+                curtranslatey = expandedy;
+            } else if (mindist === disthalf) {
+                curtranslatey = halfy;
             } else {
-                currentTranslateY = collapsedY;
+                curtranslatey = collapsedy;
             }
 
-            bottomSheet.style.transform = `translateY(${currentTranslateY}px)`;
+            bottomsheet.style.transform = `translateY(${curtranslatey}px)`;
             
-            // Allow transition to finish, then center
             setTimeout(() => {
-                if (currentLat !== 0 && currentLng !== 0) {
-                    centerMapOnUser();
+                if (curlat !== 0 && curlng !== 0) {
+                    centermap();
                 }
             }, 310);
         }
 
-        function centerMapOnUser() {
-            if (currentLat === 0 || currentLng === 0) return;
+        function centermap() {
+            if (curlat === 0 || curlng === 0) return;
 
-            // Calculate how much of the bottom sheet is currently visible in pixels
-            // 85vh minus the translation offset
-            const visibleSheetHeight = sheetHeight - currentTranslateY;
+            const visibleheight = sheetheight - curtranslatey;
+            const zoomlvl = themap.getZoom() || 17;
+            const latlngobj = L.latLng(curlat, curlng);
             
-            const zoomLevel = map.getZoom() || 17;
-            const latLng = L.latLng(currentLat, currentLng);
+            let targetpt = themap.project(latlngobj, zoomlvl);
+            targetpt.y += (visibleheight / 2);
             
-            // Project current coord to pixel coordinate system
-            let targetPoint = map.project(latLng, zoomLevel);
-            
-            // To push the marker UP visually, we must shift the map center DOWN physically.
-            // We shift it by exactly half the height of the visible bottom sheet.
-            targetPoint.y += (visibleSheetHeight / 2);
-            
-            // Convert back to latitude/longitude
-            const offsetCenter = map.unproject(targetPoint, zoomLevel);
-            
-            // Pan smoothly
-            map.panTo(offsetCenter, { animate: true, duration: 0.5 });
+            const offsetcenter = themap.unproject(targetpt, zoomlvl);
+            themap.panTo(offsetcenter, { animate: true, duration: 0.5 });
         }
 
-        function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Earth radius in km
+        function calcdist(lat1, lon1, lat2, lon2) {
+            const rad = 6371; 
             const p = Math.PI / 180;
             const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2 + 
                       Math.cos(lat1 * p) * Math.cos(lat2 * p) * 
                       (1 - Math.cos((lon2 - lon1) * p)) / 2;
-            return 2 * R * Math.asin(Math.sqrt(a));
+            return 2 * rad * Math.asin(Math.sqrt(a));
         }
 
-        function formatMilliseconds(ms) {
-            const totalSeconds = Math.floor(ms / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            return hours.toString().padStart(2, '0') + ':' + 
-                   minutes.toString().padStart(2, '0') + ':' + 
-                   seconds.toString().padStart(2, '0');
+        function formatms(ms) {
+            const totalsec = Math.floor(ms / 1000);
+            const hrs = Math.floor(totalsec / 3600);
+            const mins = Math.floor((totalsec % 3600) / 60);
+            const secs = totalsec % 60;
+            return hrs.toString().padStart(2, '0') + ':' + 
+                   mins.toString().padStart(2, '0') + ':' + 
+                   secs.toString().padStart(2, '0');
         }
 
-        function updateTimerUI() {
-            if (!isTracking || !startTimeMs) return;
-            const now = Date.now();
-            const elapsed = now - startTimeMs;
-            elTime.innerText = formatMilliseconds(elapsed);
+        function timerupdate() {
+            if (!istracking || ispaused) return;
             
-            const hoursElapsed = elapsed / 3600000;
-            if (hoursElapsed > 0 && totalDistance > 0) {
-                const avgSpeed = totalDistance / hoursElapsed;
-                elAvgSpeed.innerText = avgSpeed.toFixed(1);
+            const now = Date.now();
+            const delta = now - lastupdatetimems;
+            elapsedtimems += delta;
+            lastupdatetimems = now;
+            
+            eltime.innerText = formatms(elapsedtimems);
+            
+            const hourstracked = elapsedtimems / 3600000;
+            if (hourstracked > 0 && totalkm > 0) {
+                const avgspeed = totalkm / hourstracked;
+                elavgspeed.innerText = avgspeed.toFixed(1);
             }
         }
         
-        function showToast(message) {
-            toastMsg.innerText = message;
-            toastMsg.style.opacity = 1;
-            setTimeout(() => {
-                toastMsg.style.opacity = 0;
-            }, 3000);
+        function calltoast(msg) {
+            toastmsg.innerText = msg;
+            toastmsg.style.opacity = 1;
+            setTimeout(() => { toastmsg.style.opacity = 0; }, 3000);
         }
 
-        function onLocationUpdate(pos) {
-            currentLat = pos.coords.latitude;
-            currentLng = pos.coords.longitude;
-            const now = Date.now();
-            
-            userMarker.setLatLng([currentLat, currentLng]);
-            userMarker.setOpacity(1);
-            
-            // Execute visual centering logic
-            centerMapOnUser();
+        async function reqwakelock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakelockobj = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {
+                console.log('Wake Lock Error', err);
+            }
+        }
 
-            if (!isTracking) {
-                elStatus.innerText = "GPS Ready. Accurate & Centered.";
-                elStatus.className = "text-sm font-semibold text-blue-500 mt-1";
-            } else {
-                routeCoordinates.push([currentLat, currentLng]);
-                trackPolyline.setLatLngs(routeCoordinates);
+        function freewakelock() {
+            if (wakelockobj !== null) {
+                wakelockobj.release().then(() => { wakelockobj = null; });
+            }
+        }
 
-                if (lastLocation) {
-                    const d = calculateHaversineDistance(lastLocation.lat, lastLocation.lng, currentLat, currentLng);
-                    totalDistance += d;
+        function setdotpaused(paused) {
+            const dot = document.getElementById('userdotinner');
+            const pulse = document.getElementById('userdotpulseinner');
+            if(dot && pulse) {
+                if(paused) {
+                    dot.classList.add('userdotpaused');
+                    pulse.classList.add('userdotpulsepaused');
+                } else {
+                    dot.classList.remove('userdotpaused');
+                    pulse.classList.remove('userdotpulsepaused');
+                }
+            }
+        }
+
+        function locationupdate(pos) {
+            curlat = pos.coords.latitude;
+            curlng = pos.coords.longitude;
+            
+            usermarker.setLatLng([curlat, curlng]);
+            usermarker.setOpacity(1);
+            
+            centermap();
+
+            if (!istracking) {
+                elstatus.innerText = "GPS Ready. Accurate & Centered.";
+                elstatus.className = "text-sm font-semibold text-blue-500 mt-1";
+            } else if (istracking && !ispaused) {
+                routecoords[cursegment].push([curlat, curlng]);
+                trackpolyline.setLatLngs(routecoords);
+
+                if (lastloc) {
+                    const dist = calcdist(lastloc.lat, lastloc.lng, curlat, curlng);
+                    totalkm += dist;
                     
-                    const timeHours = (now - lastLocation.time) / 3600000;
-                    if (timeHours > 0) {
-                        const curSpeed = d / timeHours;
-                        elCurSpeed.innerHTML = curSpeed.toFixed(1) + ' <span class="text-xs font-semibold text-gray-500">km/h</span>';
+                    const timehrs = (Date.now() - lastloc.time) / 3600000;
+                    if (timehrs > 0) {
+                        const curspd = dist / timehrs;
+                        elcurspeed.innerHTML = curspd.toFixed(1) + ' <span class="text-xs font-semibold text-gray-500">km/h</span>';
                     }
                 }
 
-                lastLocation = { lat: currentLat, lng: currentLng, time: now };
-                elDist.innerText = totalDistance.toFixed(2);
+                lastloc = { lat: curlat, lng: curlng, time: Date.now() };
+                eldist.innerText = totalkm.toFixed(2);
             }
         }
 
-        function onLocationError(err) {
-            elStatus.innerText = "GPS Error. Check location permissions.";
-            elStatus.className = "text-sm font-semibold text-red-500 mt-1";
-            showToast("Failed to acquire GPS location.");
+        function locationerror(err) {
+            elstatus.innerText = "GPS Error. Check location permissions.";
+            elstatus.className = "text-sm font-semibold text-red-500 mt-1";
+            calltoast("Failed to acquire GPS location.");
         }
 
-        function startTracking() {
-            isTracking = true;
-            startTimeMs = Date.now();
-            endTimeMs = null;
-            routeCoordinates = [];
-            totalDistance = 0;
-            lastLocation = null;
+        function actionstart() {
+            istracking = true;
+            ispaused = false;
             
-            trackPolyline.setLatLngs([]);
-            elAvgSpeed.innerText = "0.0";
-            elCurSpeed.innerHTML = '0.0 <span class="text-xs font-semibold text-gray-500">km/h</span>';
-            elDist.innerText = "0.00";
+            starttimems = Date.now();
+            lastupdatetimems = starttimems;
+            elapsedtimems = 0;
+            totalkm = 0;
+            lastloc = null;
             
-            elStatus.innerText = "Tracking active...";
-            elStatus.className = "text-sm font-bold text-green-500 mt-1";
+            cursegment = 0;
+            routecoords = [[]];
+            trackpolyline.setLatLngs([]);
             
-            btnStart.classList.add("hidden");
-            btnStop.classList.remove("hidden");
-            btnSave.classList.add("hidden");
+            elavgspeed.innerText = "0.0";
+            elcurspeed.innerHTML = '0.0 <span class="text-xs font-semibold text-gray-500">km/h</span>';
+            eldist.innerText = "0.00";
             
-            // Snap map down to 15vh (collapsed) to see more of the route
-            currentTranslateY = collapsedY;
-            bottomSheet.style.transition = 'transform 0.4s ease';
-            bottomSheet.style.transform = `translateY(${currentTranslateY}px)`;
+            elstatus.innerText = "Tracking active...";
+            elstatus.className = "text-sm font-bold text-green-500 mt-1";
+            setdotpaused(false);
             
-            timerInterval = setInterval(updateTimerUI, 1000);
+            btnstart.classList.add("hidden");
+            btnpause.classList.remove("hidden");
+            btnstop.classList.remove("hidden");
+            btnsave.classList.add("hidden");
+            btnresume.classList.add("hidden");
+            
+            curtranslatey = collapsedy;
+            bottomsheet.style.transition = 'transform 0.4s ease';
+            bottomsheet.style.transform = `translateY(${curtranslatey}px)`;
+            
+            timerinterval = setInterval(timerupdate, 1000);
+            reqwakelock();
 
-            if (currentLat !== 0 && currentLng !== 0) {
-                routeCoordinates.push([currentLat, currentLng]);
-                lastLocation = { lat: currentLat, lng: currentLng, time: startTimeMs };
-                setTimeout(() => centerMapOnUser(), 400); // Center after sheet snaps
+            if (curlat !== 0 && curlng !== 0) {
+                routecoords[cursegment].push([curlat, curlng]);
+                lastloc = { lat: curlat, lng: curlng, time: Date.now() };
+                setTimeout(() => centermap(), 400); 
             }
         }
 
-        function stopTracking() {
-            isTracking = false;
-            endTimeMs = Date.now();
+        function actionpause() {
+            ispaused = true;
+            elstatus.innerText = "Paused. Moving will not record distance.";
+            elstatus.className = "text-sm font-bold text-orange-500 mt-1";
+            setdotpaused(true);
             
-            clearInterval(timerInterval);
-            timerInterval = null;
+            btnpause.classList.add("hidden");
+            btnresume.classList.remove("hidden");
+            elcurspeed.innerHTML = '0.0 <span class="text-xs font-semibold text-gray-500">km/h</span>';
             
-            elStatus.innerText = "Session stopped. Ready to save.";
-            elStatus.className = "text-sm font-semibold text-orange-500 mt-1";
-            
-            btnStop.classList.add("hidden");
-            btnStart.classList.add("hidden");
-            btnSave.classList.remove("hidden");
-            
-            elCurSpeed.innerHTML = '0.0 <span class="text-xs font-semibold text-gray-500">km/h</span>';
-            
-            // Pop sheet up to half to show save controls clearly
-            currentTranslateY = halfY;
-            bottomSheet.style.transition = 'transform 0.4s ease';
-            bottomSheet.style.transform = `translateY(${currentTranslateY}px)`;
-            setTimeout(() => centerMapOnUser(), 400);
+            timerupdate(); // One final flush of elapsed time
         }
 
-        function saveRouteData() {
-            if (routeCoordinates.length > 1) {
-                let savedItems = JSON.parse(localStorage.getItem('mygpsroutes') || '[]');
-                let newItem = {
-                    id: startTimeMs.toString(),
-                    start: startTimeMs,
-                    end: endTimeMs,
-                    d: totalDistance,
-                    pts: routeCoordinates
+        function actionresume() {
+            ispaused = false;
+            lastupdatetimems = Date.now();
+            
+            // Create a new line segment so paused movement isn't connected
+            cursegment++;
+            routecoords[cursegment] = [];
+            
+            if (curlat !== 0 && curlng !== 0) {
+                routecoords[cursegment].push([curlat, curlng]);
+                lastloc = { lat: curlat, lng: curlng, time: Date.now() };
+            } else {
+                lastloc = null;
+            }
+
+            elstatus.innerText = "Tracking active...";
+            elstatus.className = "text-sm font-bold text-green-500 mt-1";
+            setdotpaused(false);
+            
+            btnresume.classList.add("hidden");
+            btnpause.classList.remove("hidden");
+        }
+
+        function actionstop() {
+            istracking = false;
+            ispaused = false;
+            freewakelock();
+            
+            clearInterval(timerinterval);
+            timerinterval = null;
+            
+            elstatus.innerText = "Session stopped. Ready to save.";
+            elstatus.className = "text-sm font-semibold text-red-500 mt-1";
+            setdotpaused(false);
+            
+            btnstop.classList.add("hidden");
+            btnpause.classList.add("hidden");
+            btnresume.classList.add("hidden");
+            btnstart.classList.add("hidden");
+            btnsave.classList.remove("hidden");
+            
+            elcurspeed.innerHTML = '0.0 <span class="text-xs font-semibold text-gray-500">km/h</span>';
+            
+            curtranslatey = halfy;
+            bottomsheet.style.transition = 'transform 0.4s ease';
+            bottomsheet.style.transform = `translateY(${curtranslatey}px)`;
+            setTimeout(() => centermap(), 400);
+        }
+
+        function actionsave() {
+            if (totalkm > 0 || elapsedtimems > 0) {
+                let saveditems = JSON.parse(localStorage.getItem('mygpsroutes') || '[]');
+                let newrecord = {
+                    id: Date.now().toString(),
+                    stamp: Date.now(),
+                    durms: elapsedtimems,
+                    dist: totalkm,
+                    segments: routecoords
                 };
-                savedItems.push(newItem);
-                localStorage.setItem('mygpsroutes', JSON.stringify(savedItems));
-                loadHistoryData();
+                saveditems.push(newrecord);
+                localStorage.setItem('mygpsroutes', JSON.stringify(saveditems));
+                loadhistory();
             }
             
-            btnSave.classList.add("hidden");
-            btnStart.classList.remove("hidden");
-            elStatus.innerText = "Route saved successfully.";
-            elStatus.className = "text-sm font-semibold text-green-600 mt-1";
-            showToast("Route saved!");
+            btnsave.classList.add("hidden");
+            btnstart.classList.remove("hidden");
+            elstatus.innerText = "Route saved successfully.";
+            elstatus.className = "text-sm font-semibold text-green-600 mt-1";
+            calltoast("Route saved!");
         }
 
-        function loadHistoryData() {
+        function loadhistory() {
             let items = JSON.parse(localStorage.getItem('mygpsroutes') || '[]');
-            listHistory.innerHTML = "";
+            listhistory.innerHTML = "";
             
             if (items.length === 0) {
-                listHistory.innerHTML = '<div class="text-sm text-gray-400 p-4 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200 font-medium">No saved routes yet.</div>';
+                listhistory.innerHTML = '<div class="text-sm text-gray-400 p-4 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200 font-medium">No saved routes yet.</div>';
                 return;
             }
             
-            items.sort((a, b) => b.start - a.start);
+            items.sort((a, b) => b.stamp - a.stamp);
             
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
-                const dateObj = new Date(item.start);
-                const dateStr = dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                const duration = formatMilliseconds(item.end - item.start);
-                const distValue = (item.d || 0).toFixed(2);
+                const dateobj = new Date(item.stamp);
+                const datestr = dateobj.toLocaleDateString() + " " + dateobj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const durstr = formatms(item.durms);
+                const distval = (item.dist || 0).toFixed(2);
                 
-                const timeHrs = (item.end - item.start) / 3600000;
-                const spdValue = timeHrs > 0 ? (item.d / timeHrs).toFixed(1) : "0.0";
+                const tmhrs = item.durms / 3600000;
+                const spdval = tmhrs > 0 ? (item.dist / tmhrs).toFixed(1) : "0.0";
                 
-                const card = document.createElement('div');
-                card.className = "p-4 bg-gray-50 active:bg-blue-50 border border-gray-100 rounded-2xl cursor-pointer transition-colors shadow-sm";
-                card.onclick = () => drawSavedRoute(item.id); 
-                card.innerHTML = `
-                    <div class="font-black text-sm text-gray-800 mb-2">${dateStr}</div>
+                const elcard = document.createElement('div');
+                elcard.className = "p-4 bg-gray-50 active:bg-blue-50 border border-gray-100 rounded-2xl cursor-pointer transition-colors shadow-sm";
+                elcard.onclick = () => drawhistory(item.id); 
+                elcard.innerHTML = `
+                    <div class="font-black text-sm text-gray-800 mb-2">${datestr}</div>
                     <div class="grid grid-cols-3 gap-2 text-xs text-gray-700">
-                        <div class="bg-white p-2 rounded-xl border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5 tracking-wider">Dist</span><span class="font-bold">${distValue}</span> km</div>
-                        <div class="bg-white p-2 rounded-xl border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5 tracking-wider">Time</span><span class="font-bold">${duration}</span></div>
-                        <div class="bg-white p-2 rounded-xl border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5 tracking-wider">Speed</span><span class="font-bold">${spdValue}</span></div>
+                        <div class="bg-white p-2 rounded-xl border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5 tracking-wider">Dist</span><span class="font-bold">${distval}</span> km</div>
+                        <div class="bg-white p-2 rounded-xl border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5 tracking-wider">Time</span><span class="font-bold">${durstr}</span></div>
+                        <div class="bg-white p-2 rounded-xl border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5 tracking-wider">Speed</span><span class="font-bold">${spdval}</span></div>
                     </div>
                 `;
-                listHistory.appendChild(card);
+                listhistory.appendChild(elcard);
             }
         }
 
-        function drawSavedRoute(routeId) {
+        function drawhistory(reqid) {
             let items = JSON.parse(localStorage.getItem('mygpsroutes') || '[]');
-            let selectedItem = null;
+            let picked = null;
             for (let i = 0; i < items.length; i++) {
-                if (items[i].id === routeId) {
-                    selectedItem = items[i];
+                if (items[i].id === reqid) {
+                    picked = items[i];
                     break;
                 }
             }
-            if (!selectedItem || !selectedItem.pts || selectedItem.pts.length === 0) return;
+            if (!picked || !picked.segments) return;
 
-            const routeColors = ['#8b5cf6', '#0ea5e9', '#14b8a6', '#f59e0b', '#ec4899'];
-            const color = routeColors[savedRouteLayers.length % routeColors.length];
+            const pallete = ['#8b5cf6', '#0ea5e9', '#14b8a6', '#f59e0b', '#ec4899'];
+            const pcolor = pallete[savedrouteslayers.length % pallete.length];
 
-            const drawnLine = L.polyline(selectedItem.pts, {
-                color: color, 
+            const drawline = L.polyline(picked.segments, {
+                color: pcolor, 
                 weight: 5, 
                 opacity: 0.8, 
                 dashArray: '10, 10',
                 lineJoin: 'round',
                 lineCap: 'round'
-            }).addTo(map);
+            }).addTo(themap);
             
-            const markStart = L.circleMarker(selectedItem.pts[0], { radius: 6, color: '#fff', fillColor: '#22c55e', fillOpacity: 1, weight: 2 }).addTo(map);
-            const markEnd = L.circleMarker(selectedItem.pts[selectedItem.pts.length - 1], { radius: 6, color: '#fff', fillColor: '#ef4444', fillOpacity: 1, weight: 2 }).addTo(map);
-
-            savedRouteLayers.push({ line: drawnLine, mStart: markStart, mEnd: markEnd });
-            
-            // Automatically snap sheet to collapsed so user can see the route, and bounds it
-            currentTranslateY = collapsedY;
-            bottomSheet.style.transition = 'transform 0.4s ease';
-            bottomSheet.style.transform = `translateY(${currentTranslateY}px)`;
-            
-            setTimeout(() => {
-                // Determine bounds and adjust visually using our padding
-                const visibleHeight = sheetHeight - currentTranslateY;
-                map.fitBounds(drawnLine.getBounds(), {
-                    paddingBottomRight: [0, visibleHeight + 20],
-                    paddingTopLeft: [0, 20],
-                    animate: true
-                });
-            }, 400);
+            let bounds = drawline.getBounds();
+            if(Object.keys(bounds).length > 0) {
+                savedrouteslayers.push({ lineobj: drawline });
+                
+                curtranslatey = collapsedy;
+                bottomsheet.style.transition = 'transform 0.4s ease';
+                bottomsheet.style.transform = `translateY(${curtranslatey}px)`;
+                
+                setTimeout(() => {
+                    const visheight = sheetheight - curtranslatey;
+                    themap.fitBounds(bounds, {
+                        paddingBottomRight: [0, visheight + 20],
+                        paddingTopLeft: [0, 20],
+                        animate: true
+                    });
+                }, 400);
+            }
         }
 
-        function clearMapRoutes() {
-            for (let i = 0; i < savedRouteLayers.length; i++) {
-                map.removeLayer(savedRouteLayers[i].line);
-                map.removeLayer(savedRouteLayers[i].mStart);
-                map.removeLayer(savedRouteLayers[i].mEnd);
+        function clearmap() {
+            for (let i = 0; i < savedrouteslayers.length; i++) {
+                themap.removeLayer(savedrouteslayers[i].lineobj);
             }
-            savedRouteLayers = [];
+            savedrouteslayers = [];
             
-            if (currentLat !== 0 && currentLng !== 0) {
-                centerMapOnUser();
+            if (curlat !== 0 && curlng !== 0) {
+                centermap();
             }
-            showToast("Map cleared");
+            calltoast("Map cleared");
         }
 
         window.onload = function() {
-            initializeMap();
-            setupBottomSheet();
-            loadHistoryData();
+            initmap();
+            setupsheet();
+            loadhistory();
             
             if (navigator.geolocation) {
-                watchId = navigator.geolocation.watchPosition(
-                    onLocationUpdate, 
-                    onLocationError, 
+                watchid = navigator.geolocation.watchPosition(
+                    locationupdate, 
+                    locationerror, 
                     { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
                 );
             } else {
-                elStatus.innerText = "Geolocation not supported.";
-                elStatus.className = "text-sm font-semibold text-red-500 mt-1";
+                elstatus.innerText = "Geolocation not supported.";
+                elstatus.className = "text-sm font-semibold text-red-500 mt-1";
             }
             
-            btnStart.onclick = startTracking;
-            btnStop.onclick = stopTracking;
-            btnSave.onclick = saveRouteData;
-            btnClear.onclick = clearMapRoutes;
+            btnstart.onclick = actionstart;
+            btnpause.onclick = actionpause;
+            btnresume.onclick = actionresume;
+            btnstop.onclick = actionstop;
+            btnsave.onclick = actionsave;
+            btnclear.onclick = clearmap;
+            
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === 'visible' && istracking && !ispaused) {
+                    reqwakelock(); 
+                }
+            });
         };
     </script>
 </body>
