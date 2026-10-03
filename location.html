@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +18,7 @@
             padding: 0; 
             overflow: hidden;
             background-color: #f3f4f6;
-            touch-action: none; /* Prevent pull-to-refresh on mobile */
+            touch-action: none;
         }
         #map { 
             width: 100vw; 
@@ -25,35 +26,25 @@
             z-index: 0; 
         }
         
-        /* Mobile Bottom Panel Styling */
-        .bottom-panel { 
+        .bottompanel { 
             z-index: 1000; 
             box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.1);
-            max-height: 55vh;
+            max-height: 60vh;
             display: flex;
             flex-direction: column;
         }
         
-        .panel-content {
+        .panelcontent {
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS/Android */
+            -webkit-overflow-scrolling: touch;
         }
 
-        .panel-content::-webkit-scrollbar { width: 4px; }
-        .panel-content::-webkit-scrollbar-track { background: transparent; }
-        .panel-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .panelcontent::-webkit-scrollbar { width: 4px; }
+        .panelcontent::-webkit-scrollbar-track { background: transparent; }
+        .panelcontent::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
-        /* Floating Center Button */
-        #btncenter {
-            position: absolute;
-            bottom: calc(55vh + 1rem); /* Adjust based on panel height */
-            right: 1rem;
-            z-index: 999;
-            transition: bottom 0.3s ease;
-        }
-        
         @media (min-width: 768px) {
-            .bottom-panel { 
+            .bottompanel { 
                 max-width: 400px; 
                 left: 1rem; 
                 bottom: 1rem; 
@@ -61,14 +52,9 @@
                 max-height: 80vh; 
                 position: absolute;
             }
-            #btncenter {
-                bottom: 1rem;
-                right: 1rem;
-            }
         }
 
-        /* Pulsing Blue Dot for Current Location */
-        .user-loc-dot {
+        .userdot {
             width: 16px;
             height: 16px;
             background-color: #3b82f6;
@@ -77,7 +63,7 @@
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
             position: relative;
         }
-        .user-loc-dot::after {
+        .userdot::after {
             content: '';
             position: absolute;
             top: -6px;
@@ -99,34 +85,28 @@
 
     <div id="map" class="absolute inset-0"></div>
 
-    <button id="btncenter" class="bg-white p-3 rounded-full shadow-lg border border-gray-100 text-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        📍
-    </button>
-
-    <div class="bottom-panel bg-white w-full rounded-t-[2rem] absolute bottom-0 left-0 transition-transform duration-300">
-        <!-- Drag Handle Indicator -->
+    <div class="bottompanel bg-white w-full rounded-t-[2rem] absolute bottom-0 left-0">
         <div class="w-full flex justify-center py-3 shrink-0 bg-white rounded-t-[2rem]">
             <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
         </div>
         
-        <div class="panel-content px-5 pb-6 flex-1 bg-white">
+        <div class="panelcontent px-5 pb-6 flex-1 bg-white">
             <div class="flex justify-between items-end mb-4">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Route Tracker</h1>
-                    <div id="statustext" class="text-sm font-medium text-gray-500 mt-1">Locating GPS...</div>
+                    <div id="elstatus" class="text-sm font-medium text-gray-500 mt-1">Locating GPS...</div>
                 </div>
             </div>
             
-            <!-- Live Stats Grid -->
             <div class="grid grid-cols-2 gap-3 mb-5">
                 <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex flex-col justify-center">
                     <div class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Time</div>
-                    <div id="timeval" class="text-xl font-black text-gray-800 tabular-nums">00:00:00</div>
+                    <div id="eltime" class="text-xl font-black text-gray-800 tabular-nums">00:00:00</div>
                 </div>
                 <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex flex-col justify-center">
                     <div class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Distance</div>
                     <div class="flex items-baseline gap-1">
-                        <div id="distval" class="text-xl font-black text-gray-800 tabular-nums">0.00</div>
+                        <div id="eldist" class="text-xl font-black text-gray-800 tabular-nums">0.00</div>
                         <div class="text-sm font-semibold text-gray-500">km</div>
                     </div>
                 </div>
@@ -134,34 +114,35 @@
                     <div>
                         <div class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Estimated Speed</div>
                         <div class="flex items-baseline gap-1">
-                            <div id="avgspeedval" class="text-3xl font-black text-blue-600 tabular-nums">0.0</div>
+                            <div id="elavgspeed" class="text-3xl font-black text-blue-600 tabular-nums">0.0</div>
                             <div class="text-sm font-semibold text-blue-600/70">km/h</div>
                         </div>
                     </div>
                     <div class="text-right">
                         <div class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Current</div>
-                        <div id="curspeedval" class="text-lg font-bold text-gray-700 tabular-nums">0.0 <span class="text-xs font-normal">km/h</span></div>
+                        <div id="elcurspeed" class="text-lg font-bold text-gray-700 tabular-nums">0.0 <span class="text-xs font-normal">km/h</span></div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-3 mb-6">
-                <button id="btnstart" class="w-full bg-blue-600 active:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-blue-600/30 transition-transform active:scale-[0.98]">
-                    Start Tracking
+            <div class="flex gap-2 mb-6">
+                <button id="btnstart" class="flex-1 bg-blue-600 active:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-blue-600/30 transition-transform active:scale-[0.98]">
+                    Start
                 </button>
-                <button id="btnstop" class="w-full bg-red-500 active:bg-red-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-red-500/30 transition-transform active:scale-[0.98] hidden">
-                    Stop & Save Route
+                <button id="btnstop" class="flex-1 bg-orange-500 active:bg-orange-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-orange-500/30 transition-transform active:scale-[0.98] hidden">
+                    Stop
+                </button>
+                <button id="btnsave" class="flex-1 bg-green-500 active:bg-green-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-green-500/30 transition-transform active:scale-[0.98] hidden">
+                    Save Route
                 </button>
             </div>
 
-            <!-- History Section -->
             <div class="border-t border-gray-100 pt-5 mt-2">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-bold text-gray-900 tracking-tight">Saved Routes</h2>
                     <button id="btnclear" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg active:bg-red-100">Clear Map</button>
                 </div>
-                <div id="sessionlist" class="flex flex-col gap-3">
-                    <!-- History list populated by JS -->
+                <div id="listhistory" class="flex flex-col gap-3">
                 </div>
             </div>
         </div>
@@ -169,44 +150,42 @@
 
     <script>
         let map;
-        let activepolyline;
-        let routecoords = [];
-        let savedpolylines = [];
-        let globalwatchid = null;
-        let istracking = false;
-        let starttime = null;
-        let totaldistance = 0;
-        let lastpos = null;
-        let timerinterval = null;
-        let currentmarker = null;
-        let userlat = 0;
-        let userlng = 0;
-        let hascenteredonce = false;
+        let polyline;
+        let coords = [];
+        let savedroutes = [];
+        let watchid = null;
+        let tracking = false;
+        let startms = null;
+        let endms = null;
+        let dist = 0;
+        let lastloc = null;
+        let timer = null;
+        let marker = null;
+        let lat = 0;
+        let lng = 0;
 
-        const ui = {
-            time: document.getElementById('timeval'),
-            dist: document.getElementById('distval'),
-            avgspeed: document.getElementById('avgspeedval'),
-            curspeed: document.getElementById('curspeedval'),
-            status: document.getElementById('statustext'),
-            btnstart: document.getElementById('btnstart'),
-            btnstop: document.getElementById('btnstop'),
-            btnclear: document.getElementById('btnclear'),
-            btncenter: document.getElementById('btncenter'),
-            list: document.getElementById('sessionlist')
-        };
+        let eltime = document.getElementById('eltime');
+        let eldist = document.getElementById('eldist');
+        let elavgspeed = document.getElementById('elavgspeed');
+        let elcurspeed = document.getElementById('elcurspeed');
+        let elstatus = document.getElementById('elstatus');
+        let btnstart = document.getElementById('btnstart');
+        let btnstop = document.getElementById('btnstop');
+        let btnsave = document.getElementById('btnsave');
+        let btnclear = document.getElementById('btnclear');
+        let listhistory = document.getElementById('listhistory');
 
         function initmap() {
             map = L.map('map', { 
                 zoomControl: false,
                 attributionControl: false 
-            }).setView([-6.2088, 106.8456], 14);
+            }).setView([0, 0], 16);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19
             }).addTo(map);
 
-            activepolyline = L.polyline([], {
+            polyline = L.polyline([], {
                 color: '#2563eb', 
                 weight: 6, 
                 opacity: 0.9, 
@@ -214,196 +193,202 @@
                 lineCap: 'round'
             }).addTo(map);
 
-            const doticon = L.divIcon({
-                className: 'custom-div-icon',
-                html: "<div class='user-loc-dot'></div>",
+            let icon = L.divIcon({
+                className: 'customicon',
+                html: "<div class='userdot'></div>",
                 iconSize: [16, 16],
                 iconAnchor: [8, 8]
             });
             
-            currentmarker = L.marker([-6.2088, 106.8456], { icon: doticon, zIndexOffset: 1000 }).addTo(map);
-            currentmarker.setOpacity(0);
+            marker = L.marker([0, 0], { icon: icon, zIndexOffset: 1000 }).addTo(map);
+            marker.setOpacity(0);
         }
 
-        function calculatedistance(lat1, lon1, lat2, lon2) {
-            const earthradiuskm = 6371;
-            const p = Math.PI / 180;
-            const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2 + 
-                      Math.cos(lat1 * p) * Math.cos(lat2 * p) * 
-                      (1 - Math.cos((lon2 - lon1) * p)) / 2;
-            return 2 * earthradiuskm * Math.asin(Math.sqrt(a));
+        function calcdist(lat1, lon1, lat2, lon2) {
+            let r = 6371;
+            let p = Math.PI / 180;
+            let a = 0.5 - Math.cos((lat2 - lat1) * p) / 2 + 
+                    Math.cos(lat1 * p) * Math.cos(lat2 * p) * 
+                    (1 - Math.cos((lon2 - lon1) * p)) / 2;
+            return 2 * r * Math.asin(Math.sqrt(a));
         }
 
-        function formatduration(ms) {
-            let totalseconds = Math.floor(ms / 1000);
-            let h = Math.floor(totalseconds / 3600);
-            let m = Math.floor((totalseconds % 3600) / 60);
-            let s = totalseconds % 60;
-            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        function formatms(ms) {
+            let s = Math.floor(ms / 1000);
+            let hr = Math.floor(s / 3600);
+            let min = Math.floor((s % 3600) / 60);
+            let sec = s % 60;
+            return hr.toString().padStart(2, '0') + ':' + 
+                   min.toString().padStart(2, '0') + ':' + 
+                   sec.toString().padStart(2, '0');
         }
 
-        function updatetimerui() {
-            if (!istracking || !starttime) return;
-            const now = Date.now();
-            const elapsedms = now - starttime;
-            ui.time.innerText = formatduration(elapsedms);
+        function updatetimer() {
+            if (!tracking || !startms) return;
+            let now = Date.now();
+            let elapsed = now - startms;
+            eltime.innerText = formatms(elapsed);
             
-            const elapsedhours = elapsedms / (1000 * 60 * 60);
-            if (elapsedhours > 0 && totaldistance > 0) {
-                const avg = totaldistance / elapsedhours;
-                ui.avgspeed.innerText = avg.toFixed(1);
+            let h = elapsed / 3600000;
+            if (h > 0 && dist > 0) {
+                let avg = dist / h;
+                elavgspeed.innerText = avg.toFixed(1);
             }
         }
 
-        function onpositionupdate(position) {
-            userlat = position.coords.latitude;
-            userlng = position.coords.longitude;
-            const now = Date.now();
+        function onlocation(pos) {
+            lat = pos.coords.latitude;
+            lng = pos.coords.longitude;
+            let now = Date.now();
             
-            currentmarker.setLatLng([userlat, userlng]);
-            currentmarker.setOpacity(1);
+            marker.setLatLng([lat, lng]);
+            marker.setOpacity(1);
+            
+            map.setView([lat, lng], map.getZoom() || 17);
 
-            if (!hascenteredonce) {
-                map.setView([userlat, userlng], 16);
-                hascenteredonce = true;
-                if (!istracking) {
-                    ui.status.innerText = "GPS Ready. Tap Start Tracking.";
-                    ui.status.className = "text-sm font-medium text-blue-500 mt-1";
-                }
-            }
+            if (!tracking) {
+                elstatus.innerText = "GPS Ready. User centered.";
+                elstatus.className = "text-sm font-medium text-blue-500 mt-1";
+            } else {
+                coords.push([lat, lng]);
+                polyline.setLatLngs(coords);
 
-            if (istracking) {
-                map.panTo([userlat, userlng]);
-                
-                routecoords.push([userlat, userlng]);
-                activepolyline.setLatLngs(routecoords);
-
-                if (lastpos) {
-                    const distdelta = calculatedistance(lastpos.lat, lastpos.lng, userlat, userlng);
-                    totaldistance += distdelta;
+                if (lastloc) {
+                    let d = calcdist(lastloc.lat, lastloc.lng, lat, lng);
+                    dist += d;
                     
-                    const timedeltahours = (now - lastpos.time) / (1000 * 60 * 60);
-                    if (timedeltahours > 0) {
-                        const currentspd = distdelta / timedeltahours;
-                        ui.curspeed.innerHTML = `${currentspd.toFixed(1)} <span class="text-xs font-normal">km/h</span>`;
+                    let timeh = (now - lastloc.time) / 3600000;
+                    if (timeh > 0) {
+                        let curspd = d / timeh;
+                        elcurspeed.innerHTML = curspd.toFixed(1) + ' <span class="text-xs font-normal">km/h</span>';
                     }
                 }
 
-                lastpos = { lat: userlat, lng: userlng, time: now };
-                ui.dist.innerText = totaldistance.toFixed(2);
+                lastloc = { lat: lat, lng: lng, time: now };
+                eldist.innerText = dist.toFixed(2);
             }
         }
 
-        function onpositionerror(err) {
-            ui.status.innerText = "GPS Error. Check location permissions.";
-            ui.status.className = "text-sm font-medium text-red-500 mt-1";
+        function onerror(err) {
+            elstatus.innerText = "GPS Error. Check location permissions.";
+            elstatus.className = "text-sm font-medium text-red-500 mt-1";
         }
 
-        function starttracking() {
-            istracking = true;
-            starttime = Date.now();
-            routecoords = [];
-            totaldistance = 0;
-            lastpos = null;
+        function starttrack() {
+            tracking = true;
+            startms = Date.now();
+            endms = null;
+            coords = [];
+            dist = 0;
+            lastloc = null;
             
-            activepolyline.setLatLngs([]);
-            ui.avgspeed.innerText = "0.0";
-            ui.curspeed.innerHTML = `0.0 <span class="text-xs font-normal">km/h</span>`;
-            ui.dist.innerText = "0.00";
+            polyline.setLatLngs([]);
+            elavgspeed.innerText = "0.0";
+            elcurspeed.innerHTML = '0.0 <span class="text-xs font-normal">km/h</span>';
+            eldist.innerText = "0.00";
             
-            ui.status.innerText = "Tracking active...";
-            ui.status.className = "text-sm font-medium text-green-500 mt-1";
+            elstatus.innerText = "Tracking active...";
+            elstatus.className = "text-sm font-medium text-green-500 mt-1";
             
-            ui.btnstart.classList.add("hidden");
-            ui.btnstop.classList.remove("hidden");
+            btnstart.classList.add("hidden");
+            btnstop.classList.remove("hidden");
+            btnsave.classList.add("hidden");
             
-            timerinterval = setInterval(updatetimerui, 1000);
+            timer = setInterval(updatetimer, 1000);
 
-            if (userlat !== 0 && userlng !== 0) {
-                routecoords.push([userlat, userlng]);
-                lastpos = { lat: userlat, lng: userlng, time: starttime };
-                map.setView([userlat, userlng], 17);
+            if (lat !== 0 && lng !== 0) {
+                coords.push([lat, lng]);
+                lastloc = { lat: lat, lng: lng, time: startms };
+                map.setView([lat, lng], 17);
             }
         }
 
-        function stoptracking() {
-            istracking = false;
-            const endtime = Date.now();
+        function stoptrack() {
+            tracking = false;
+            endms = Date.now();
             
-            clearInterval(timerinterval);
-            timerinterval = null;
+            clearInterval(timer);
+            timer = null;
             
-            ui.status.innerText = "Session stopped and saved.";
-            ui.status.className = "text-sm font-medium text-gray-500 mt-1";
+            elstatus.innerText = "Session stopped. Ready to save.";
+            elstatus.className = "text-sm font-medium text-orange-500 mt-1";
             
-            ui.btnstop.classList.add("hidden");
-            ui.btnstart.classList.remove("hidden");
-            ui.curspeed.innerHTML = `0.0 <span class="text-xs font-normal">km/h</span>`;
-
-            if (routecoords.length > 1) {
-                savesession(starttime, endtime, totaldistance, routecoords);
-            }
+            btnstop.classList.add("hidden");
+            btnstart.classList.add("hidden");
+            btnsave.classList.remove("hidden");
+            
+            elcurspeed.innerHTML = '0.0 <span class="text-xs font-normal">km/h</span>';
         }
 
-        function savesession(start, end, distance, coords) {
-            let sessions = JSON.parse(localStorage.getItem('gpstrackerroutes') || '[]');
+        function saveroute() {
+            if (coords.length > 1) {
+                let items = JSON.parse(localStorage.getItem('mygpsroutes') || '[]');
+                let item = {
+                    id: startms.toString(),
+                    start: startms,
+                    end: endms,
+                    d: dist,
+                    pts: coords
+                };
+                items.push(item);
+                localStorage.setItem('mygpsroutes', JSON.stringify(items));
+                loadhistory();
+            }
             
-            const newsession = {
-                id: start.toString(),
-                starttime: start,
-                endtime: end,
-                distance: distance,
-                coords: coords
-            };
-            
-            sessions.push(newsession);
-            localStorage.setItem('gpstrackerroutes', JSON.stringify(sessions));
-            loadhistory();
+            btnsave.classList.add("hidden");
+            btnstart.classList.remove("hidden");
+            elstatus.innerText = "Route saved successfully.";
+            elstatus.className = "text-sm font-medium text-green-600 mt-1";
         }
 
         function loadhistory() {
-            const sessions = JSON.parse(localStorage.getItem('gpstrackerroutes') || '[]');
-            ui.list.innerHTML = "";
+            let items = JSON.parse(localStorage.getItem('mygpsroutes') || '[]');
+            listhistory.innerHTML = "";
             
-            if (sessions.length === 0) {
-                ui.list.innerHTML = `<div class="text-sm text-gray-400 p-4 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">No saved routes yet.</div>`;
+            if (items.length === 0) {
+                listhistory.innerHTML = '<div class="text-sm text-gray-400 p-4 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">No saved routes yet.</div>';
                 return;
             }
             
-            sessions.sort((a, b) => b.starttime - a.starttime);
+            items.sort(function(a, b) { return b.start - a.start; });
             
-            sessions.forEach(session => {
-                const startd = new Date(session.starttime);
-                const datestr = startd.toLocaleDateString() + " " + startd.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                const durationstr = formatduration(session.endtime - session.starttime);
-                const diststr = (session.distance || 0).toFixed(2);
+            for (let i = 0; i < items.length; i++) {
+                let d = new Date(items[i].start);
+                let dstr = d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                let dur = formatms(items[i].end - items[i].start);
+                let dval = (items[i].d || 0).toFixed(2);
                 
-                const hours = (session.endtime - session.starttime) / (1000 * 60 * 60);
-                const avgspeedstr = hours > 0 ? (session.distance / hours).toFixed(1) : "0.0";
+                let h = (items[i].end - items[i].start) / 3600000;
+                let spd = h > 0 ? (items[i].d / h).toFixed(1) : "0.0";
                 
-                const itemhtml = `
-                    <div class="p-4 bg-gray-50 active:bg-blue-50 border border-gray-100 rounded-2xl cursor-pointer transition-colors" data-id="${session.id}" onclick="drawhistoryroute('${session.id}')">
-                        <div class="font-bold text-sm text-gray-800 mb-2">${datestr}</div>
-                        <div class="grid grid-cols-3 gap-2 text-xs text-gray-700">
-                            <div class="bg-white p-2 rounded-lg border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5">Dist</span>${diststr} km</div>
-                            <div class="bg-white p-2 rounded-lg border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5">Time</span>${durationstr}</div>
-                            <div class="bg-white p-2 rounded-lg border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5">Speed</span>${avgspeedstr}</div>
-                        </div>
-                    </div>
-                `;
-                ui.list.insertAdjacentHTML('beforeend', itemhtml);
-            });
+                let box = document.createElement('div');
+                box.className = "p-4 bg-gray-50 active:bg-blue-50 border border-gray-100 rounded-2xl cursor-pointer transition-colors";
+                box.onclick = function() { drawroute(items[i].id); };
+                box.innerHTML = '<div class="font-bold text-sm text-gray-800 mb-2">' + dstr + '</div>' +
+                    '<div class="grid grid-cols-3 gap-2 text-xs text-gray-700">' +
+                        '<div class="bg-white p-2 rounded-lg border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5">Dist</span>' + dval + ' km</div>' +
+                        '<div class="bg-white p-2 rounded-lg border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5">Time</span>' + dur + '</div>' +
+                        '<div class="bg-white p-2 rounded-lg border border-gray-100"><span class="text-[10px] uppercase text-gray-400 font-bold block mb-0.5">Speed</span>' + spd + '</div>' +
+                    '</div>';
+                listhistory.appendChild(box);
+            }
         }
 
-        window.drawhistoryroute = function(sessionid) {
-            const sessions = JSON.parse(localStorage.getItem('gpstrackerroutes') || '[]');
-            const session = sessions.find(s => s.id === sessionid);
-            if (!session || !session.coords || session.coords.length === 0) return;
+        function drawroute(rid) {
+            let items = JSON.parse(localStorage.getItem('mygpsroutes') || '[]');
+            let item = null;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].id === rid) {
+                    item = items[i];
+                    break;
+                }
+            }
+            if (!item || !item.pts || item.pts.length === 0) return;
 
-            const colors = ['#8b5cf6', '#0ea5e9', '#14b8a6', '#f59e0b', '#ec4899'];
-            const color = colors[savedpolylines.length % colors.length];
+            let colors = ['#8b5cf6', '#0ea5e9', '#14b8a6', '#f59e0b', '#ec4899'];
+            let color = colors[savedroutes.length % colors.length];
 
-            const newline = L.polyline(session.coords, {
+            let line = L.polyline(item.pts, {
                 color: color, 
                 weight: 5, 
                 opacity: 0.8, 
@@ -412,56 +397,44 @@
                 lineCap: 'round'
             }).addTo(map);
             
-            const startmarker = L.circleMarker(session.coords[0], { radius: 6, color: '#fff', fillColor: '#22c55e', fillOpacity: 1, weight: 2 }).addTo(map);
-            const endmarker = L.circleMarker(session.coords[session.coords.length - 1], { radius: 6, color: '#fff', fillColor: '#ef4444', fillOpacity: 1, weight: 2 }).addTo(map);
+            let mstart = L.circleMarker(item.pts[0], { radius: 6, color: '#fff', fillColor: '#22c55e', fillOpacity: 1, weight: 2 }).addTo(map);
+            let mend = L.circleMarker(item.pts[item.pts.length - 1], { radius: 6, color: '#fff', fillColor: '#ef4444', fillOpacity: 1, weight: 2 }).addTo(map);
 
-            savedpolylines.push({ line: newline, start: startmarker, end: endmarker });
-            map.fitBounds(newline.getBounds(), { padding: [50, 50] });
-        };
+            savedroutes.push({ l: line, s: mstart, e: mend });
+        }
 
-        function clearmaphistory() {
-            savedpolylines.forEach(item => {
-                map.removeLayer(item.line);
-                map.removeLayer(item.start);
-                map.removeLayer(item.end);
-            });
-            savedpolylines = [];
+        function clearmap() {
+            for (let i = 0; i < savedroutes.length; i++) {
+                map.removeLayer(savedroutes[i].l);
+                map.removeLayer(savedroutes[i].s);
+                map.removeLayer(savedroutes[i].e);
+            }
+            savedroutes = [];
             
-            if (routecoords.length > 0) {
-                map.fitBounds(activepolyline.getBounds(), { padding: [50, 50] });
-            } else if (userlat !== 0) {
-                map.setView([userlat, userlng], 16);
+            if (lat !== 0 && lng !== 0) {
+                map.setView([lat, lng], 17);
             }
         }
 
-        function centeronuser() {
-            if (userlat !== 0 && userlng !== 0) {
-                map.setView([userlat, userlng], 17);
-            } else {
-                ui.status.innerText = "Location not found yet.";
-                ui.status.className = "text-sm font-medium text-orange-500 mt-1";
-            }
-        }
-
-        window.onload = () => {
+        window.onload = function() {
             initmap();
             loadhistory();
             
             if (navigator.geolocation) {
-                globalwatchid = navigator.geolocation.watchPosition(
-                    onpositionupdate, 
-                    onpositionerror, 
-                    { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
+                watchid = navigator.geolocation.watchPosition(
+                    onlocation, 
+                    onerror, 
+                    { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
                 );
             } else {
-                ui.status.innerText = "Geolocation not supported.";
-                ui.status.className = "text-sm font-medium text-red-500 mt-1";
+                elstatus.innerText = "Geolocation not supported.";
+                elstatus.className = "text-sm font-medium text-red-500 mt-1";
             }
             
-            ui.btnstart.addEventListener('click', starttracking);
-            ui.btnstop.addEventListener('click', stoptracking);
-            ui.btnclear.addEventListener('click', clearmaphistory);
-            ui.btncenter.addEventListener('click', centeronuser);
+            btnstart.onclick = starttrack;
+            btnstop.onclick = stoptrack;
+            btnsave.onclick = saveroute;
+            btnclear.onclick = clearmap;
         };
     </script>
 </body>
